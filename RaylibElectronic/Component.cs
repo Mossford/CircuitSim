@@ -13,7 +13,9 @@ namespace RaylibElectronic
         public List<Vector2> inputPositions;
         public List<int> outputConnections;
         public List<Vector2> outputPositions;
-        public bool output;
+        public List<bool> outputs;
+        //the output index of the component that connects to this
+        public Dictionary<int, int> outputConnectionsOther;
         public Vector2 position;
         public int width;
         public int height;
@@ -35,19 +37,24 @@ namespace RaylibElectronic
 
         public void PreCalculate()
         {
+            for (int i = 0; i < outputCount; i++)
+            {
+                outputs.Add(false);
+            }
+            
             radius = 3 * size;
             padding = radius;
             
             for (int i = 0; i < inputCount; i++)
             {
-                int y = ((i + 1) * (radius + padding)) + (i * radius);
+                int y = ((i) * (radius + padding)) + (i * radius);
                 inputPositions.Add(new Vector2(position.X, position.Y + y));
             }
             
             if(inputCount >= outputCount)
-                height = (padding * (inputCount + 1) + padding) + (radius * (inputCount + 1));
+                height = ((inputCount) * (radius + padding)) + (inputCount * radius) + padding;
             else
-                height = (padding * (outputCount + 1) + padding) + (radius * (outputCount + 1));
+                height = ((outputCount) * (radius + padding)) + (outputCount * radius) + padding;
             width = Raylib.MeasureText(type.ToString(), 15) * size;
             
             for (int i = 0; i < outputCount; i++)
@@ -78,6 +85,13 @@ namespace RaylibElectronic
                 return false;
             return true;
         }
+
+        public bool GetOutputFromOther(int input)
+        {
+            if (inputConnections.Count > 0)
+                return ElectronicSim.components[inputConnections[input]].outputs[outputConnectionsOther[inputConnections[input]]];
+            return false;
+        }
         
         public void Render()
         {
@@ -99,37 +113,23 @@ namespace RaylibElectronic
                 for (int i = 0; i < outputCount; i++)
                 {
                     int y = ((i + 1) * (radius + padding)) + (i * radius);
-                    if(output)
+                    if(outputs[i])
                         Raylib.DrawCircle((int)position.X + width, (int)position.Y + y, radius, Color.Green);
                     else
                         Raylib.DrawCircle((int)position.X + width, (int)position.Y + y, radius, Color.Red);
                 }
             }
 
-            int oldOther = -1;
-            int totalCount = 0;
             //draw connecting lines
-            for (int i = 0; i < outputConnections.Count; i++)
+            for (int i = 0; i < inputConnections.Count; i++)
             {
-                Vector2 outputPos = outputPositions[i];
+                Vector2 inputPos = inputPositions[i];
+                Vector2 otherOutPos = ElectronicSim.components[inputConnections[i]].outputPositions[outputConnectionsOther[inputConnections[i]]];
                 
-                //find what we connect to
-                for (int j = 0; j < ElectronicSim.components[outputConnections[i]].inputConnections.Count; j++)
-                {
-                    if (ElectronicSim.components[outputConnections[i]].inputConnections[j] == id)
-                    {
-                        if (oldOther == outputConnections[i])
-                            totalCount++;
-                        //Console.WriteLine(totalCount + " " + oldOther);
-                        Vector2 otherPos = ElectronicSim.components[outputConnections[i]].inputPositions[j + totalCount];
-                        if(output)
-                            Raylib.DrawLineV(outputPositions[i], otherPos, Color.Green);
-                        else
-                            Raylib.DrawLineV(outputPositions[i], otherPos, Color.Black);
-                        oldOther = outputConnections[i];
-                        break;
-                    }
-                }
+                if(ElectronicSim.components[inputConnections[i]].outputs[outputConnectionsOther[inputConnections[i]]])
+                    Raylib.DrawLineV(inputPos, otherOutPos, Color.Green);
+                else
+                    Raylib.DrawLineV(inputPos, otherOutPos, Color.Red);
             }
             
             if (highLight)

@@ -10,41 +10,12 @@ namespace RaylibElectronic
             inputCount = 2;
             outputCount = 1;
             this.id = ElectronicSim.components.Count;
-            inputConnections = new List<int>(2);
-            outputConnections = new List<int>(1);
-            inputPositions = new List<Vector2>(2);
-            outputPositions = new List<Vector2>(1);
-            this.position = position;
-        }
-        
-        public NandGate(int input1, int input2, Vector2 position)
-        {
-            type = ComponentTypes.NandGate;
-            inputCount = 2;
-            outputCount = 1;
-            this.id = ElectronicSim.components.Count;
-            inputConnections = new List<int>(2);
-            outputConnections = new List<int>(1);
-            inputPositions = new List<Vector2>(2);
-            outputPositions = new List<Vector2>(1);
-            inputConnections.Add(input1);
-            inputConnections.Add(input2);
-            this.position = position;
-        }
-        
-        public NandGate(int input1, int input2, int output, Vector2 position)
-        {
-            type = ComponentTypes.NandGate;
-            inputCount = 2;
-            outputCount = 1;
-            this.id = ElectronicSim.components.Count;
-            inputConnections = new List<int>(2);
-            outputConnections = new List<int>(1);
-            inputPositions = new List<Vector2>(2);
-            outputPositions = new List<Vector2>(1);
-            outputConnections.Add(output);
-            inputConnections.Add(input1);
-            inputConnections.Add(input2);
+            inputConnections = new List<int>(inputCount);
+            outputConnections = new List<int>(outputCount);
+            inputPositions = new List<Vector2>(inputCount);
+            outputPositions = new List<Vector2>(outputCount);
+            outputConnectionsOther = new Dictionary<int, int>();
+            outputs = new List<bool>(outputCount);
             this.position = position;
         }
         
@@ -61,7 +32,7 @@ namespace RaylibElectronic
             if(inputConnections.Count < 2)
                 return;
 
-            output = !(ElectronicSim.components[inputConnections[0]].output && ElectronicSim.components[inputConnections[1]].output);
+            outputs[0] = !(GetOutputFromOther(0) && GetOutputFromOther(1));
         }
 
         public override void CustomRender()

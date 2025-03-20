@@ -11,25 +11,13 @@ namespace RaylibElectronic
             inputCount = 1;
             outputCount = 0;
             this.id = ElectronicSim.components.Count;
-            inputConnections = new List<int>();
-            outputConnections = new List<int>();
-            inputPositions = new List<Vector2>();
-            outputPositions = new List<Vector2>();
+            inputConnections = new List<int>(inputCount);
+            outputConnections = new List<int>(outputCount);
+            inputPositions = new List<Vector2>(inputCount);
+            outputPositions = new List<Vector2>(outputCount);
+            outputConnectionsOther = new Dictionary<int, int>();
+            outputs = new List<bool>(outputCount);
             this.position = position;
-        }
-        
-        public Led(int input, Vector2 position)
-        {
-            type = ComponentTypes.Led;
-            inputCount = 1;
-            outputCount = 0;
-            this.id = ElectronicSim.components.Count;
-            inputConnections = new List<int>();
-            outputConnections = new List<int>();
-            inputPositions = new List<Vector2>();
-            outputPositions = new List<Vector2>();
-            this.position = position;
-            inputConnections.Add(input);
         }
         
         public override void Init()
@@ -45,7 +33,7 @@ namespace RaylibElectronic
 
         public override void CustomRender()
         {
-            if (inputConnections.Count > 0 && ElectronicSim.components[inputConnections[0]].output)
+            if (inputConnections.Count > 0 && GetOutputFromOther(0))
             {
                 Raylib.DrawCircleV(new Vector2(position.X + width, position.Y + (height / 2f)), radius * size, Color.Blue);
             }

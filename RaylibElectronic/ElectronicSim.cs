@@ -13,7 +13,9 @@ namespace RaylibElectronic
         XorGate = 5,
         Led = 6,
         Cross = 7,
-        empty = 8,
+        Splitter = 8,
+        testing = 9,
+        empty,
     }
 
     public static class ElectronicSim
@@ -103,6 +105,16 @@ namespace RaylibElectronic
                         components[index] = new Cross(position);
                         break;
                     }
+                    case ComponentTypes.Splitter:
+                    {
+                        components[index] = new Splitter(position);
+                        break;
+                    }
+                    case ComponentTypes.testing:
+                    {
+                        components[index] = new Testing(position);
+                        break;
+                    }
                 }
             
                 components[index].Init();
@@ -158,6 +170,16 @@ namespace RaylibElectronic
                         components.Add(new Cross(position));
                         break;
                     }
+                    case ComponentTypes.Splitter:
+                    {
+                        components.Add(new Splitter(position));
+                        break;
+                    }
+                    case ComponentTypes.testing:
+                    {
+                        components.Add(new Testing(position));
+                        break;
+                    }
                 }
             
                 components[index].Init();
@@ -171,11 +193,13 @@ namespace RaylibElectronic
             for (int i = 0; i < components[index].inputConnections.Count; i++)
             {
                 components[components[index].inputConnections[i]].outputConnections.Remove(index);
+                components[components[index].inputConnections[i]].outputConnectionsOther.Remove(components[index].inputConnections[i]);
             }
             
             for (int i = 0; i < components[index].outputConnections.Count; i++)
             {
                 components[components[index].outputConnections[i]].inputConnections.Remove(index);
+                components[components[index].outputConnections[i]].outputs[components[components[index].outputConnections[i]].outputConnectionsOther[index]] = false;
             }
             
             idsToBeUsed.Enqueue(index);

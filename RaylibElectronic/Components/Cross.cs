@@ -10,40 +10,12 @@ namespace RaylibElectronic
             inputCount = 1;
             outputCount = 2;
             this.id = ElectronicSim.components.Count;
-            inputConnections = new List<int>(1);
-            outputConnections = new List<int>(2);
-            inputPositions = new List<Vector2>(1);
-            outputPositions = new List<Vector2>(2);
-            this.position = position;
-        }
-        
-        public Cross(int input1, Vector2 position)
-        {
-            type = ComponentTypes.Cross;
-            inputCount = 1;
-            outputCount = 2;
-            this.id = ElectronicSim.components.Count;
-            inputConnections = new List<int>(1);
-            outputConnections = new List<int>(2);
-            inputPositions = new List<Vector2>(1);
-            outputPositions = new List<Vector2>(2);
-            inputConnections.Add(input1);
-            this.position = position;
-        }
-        
-        public Cross(int input1, int output1, int output2, Vector2 position)
-        {
-            type = ComponentTypes.Cross;
-            inputCount = 1;
-            outputCount = 2;
-            this.id = ElectronicSim.components.Count;
-            inputConnections = new List<int>(1);
-            outputConnections = new List<int>(2);
-            inputPositions = new List<Vector2>(1);
-            outputPositions = new List<Vector2>(2);
-            outputConnections.Add(output1);
-            outputConnections.Add(output2);
-            inputConnections.Add(input1);
+            inputConnections = new List<int>(inputCount);
+            outputConnections = new List<int>(outputCount);
+            inputPositions = new List<Vector2>(inputCount);
+            outputPositions = new List<Vector2>(outputCount);
+            outputConnectionsOther = new Dictionary<int, int>();
+            outputs = new List<bool>(outputCount);
             this.position = position;
         }
         
@@ -60,7 +32,8 @@ namespace RaylibElectronic
             if(inputConnections.Count < 1)
                 return;
             
-            output = ElectronicSim.components[inputConnections[0]].output;
+            outputs[0] = GetOutputFromOther(0);
+            outputs[1] = GetOutputFromOther(0);
 
         }
 

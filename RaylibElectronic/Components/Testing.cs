@@ -2,13 +2,13 @@ using System.Numerics;
 
 namespace RaylibElectronic
 {
-    public class XorGate : Component
+    public class Testing : Component
     {
-        public XorGate(Vector2 position)
+        public Testing(Vector2 position)
         {
-            type = ComponentTypes.XorGate;
-            inputCount = 2;
-            outputCount = 1;
+            type = ComponentTypes.testing;
+            inputCount = 50;
+            outputCount = 50;
             this.id = ElectronicSim.components.Count;
             inputConnections = new List<int>(inputCount);
             outputConnections = new List<int>(outputCount);
@@ -18,7 +18,7 @@ namespace RaylibElectronic
             outputs = new List<bool>(outputCount);
             this.position = position;
         }
-        
+            
         public override void Init()
         {
             PreCalculate();
@@ -29,15 +29,15 @@ namespace RaylibElectronic
             currentInputCount = inputConnections.Count;
             currentOutputCount = outputConnections.Count;
             
-            if(inputConnections.Count < 2)
-                return;
-            
-            outputs[0] = GetOutputFromOther(0) != GetOutputFromOther(1);
+            for (int i = 0; i < currentInputCount; i++)
+            {
+                outputs[i] = GetOutputFromOther(i);
+            }
         }
 
         public override void CustomRender()
         {
-            
+                
         }
     }
 }

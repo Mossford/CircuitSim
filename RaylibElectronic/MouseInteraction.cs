@@ -70,9 +70,9 @@ namespace RaylibElectronic
                 float mouseWheel = Raylib.GetMouseWheelMove();
                 if (mouseWheel != 0f)
                 {
-                    currentSpawnComponent = (currentSpawnComponent + (int)mouseWheel) % ElectronicSim.componentAmount;
+                    currentSpawnComponent = (currentSpawnComponent + (int)mouseWheel) % (ElectronicSim.componentAmount - 1);
                     if(currentSpawnComponent < 0)
-                        currentSpawnComponent = ElectronicSim.componentAmount - 1;
+                        currentSpawnComponent = ElectronicSim.componentAmount - 2;
                 }
                 
                 renderSpawnText = true;
@@ -99,11 +99,11 @@ namespace RaylibElectronic
                     int outputCount = ElectronicSim.components[currentSelectedSpawnComponent].outputCount;
                     if (currentWireCount > outputCount)
                     {
-                        Raylib.DrawLineV(ElectronicSim.components[currentSelectedSpawnComponent].inputPositions[(inputCount + outputCount) - currentWireCount], Mouse.position, Color.DarkGray);
+                        Raylib.DrawLineV(ElectronicSim.components[currentSelectedSpawnComponent].inputPositions[(inputCount + outputCount) - currentWireCount], Mouse.position, Color.Red);
                     }
                     else
                     {
-                        Raylib.DrawLineV(ElectronicSim.components[currentSelectedSpawnComponent].outputPositions[outputCount - currentWireCount], Mouse.position, Color.DarkGray);
+                        Raylib.DrawLineV(ElectronicSim.components[currentSelectedSpawnComponent].outputPositions[outputCount - currentWireCount], Mouse.position, Color.Red);
                     }
                 }
             }
@@ -128,8 +128,10 @@ namespace RaylibElectronic
                 {
                     if (ElectronicSim.components[index].currentOutputCount < ElectronicSim.components[index].outputCount)
                     {
+                        ElectronicSim.components[currentSelectedSpawnComponent].outputConnectionsOther.TryAdd(index, ElectronicSim.components[index].outputConnections.Count);
                         ElectronicSim.components[index].outputConnections.Add(currentSelectedSpawnComponent);
                         ElectronicSim.components[currentSelectedSpawnComponent].inputConnections.Add(index);
+                        
                         currentWireCount--;
                     }
                 }
@@ -138,6 +140,7 @@ namespace RaylibElectronic
                     //do the output connections
                     if (ElectronicSim.components[index].currentInputCount < ElectronicSim.components[index].inputCount)
                     {
+                        ElectronicSim.components[index].outputConnectionsOther.TryAdd(currentSelectedSpawnComponent, ElectronicSim.components[currentSelectedSpawnComponent].outputConnections.Count);
                         ElectronicSim.components[currentSelectedSpawnComponent].outputConnections.Add(index);
                         ElectronicSim.components[index].inputConnections.Add(currentSelectedSpawnComponent);
                         currentWireCount--;

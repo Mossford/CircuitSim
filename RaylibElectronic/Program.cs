@@ -14,6 +14,7 @@ namespace RaylibElectronic
         public static void Main(String[] args)
         {
             Raylib.InitWindow((int)Window.size.X, (int)Window.size.Y, "Electronic");
+            Raylib.SetWindowState(ConfigFlags.ResizableWindow);
 
             Raylib.SetTargetFPS(60);
             

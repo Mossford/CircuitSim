@@ -2,13 +2,13 @@ using System.Numerics;
 
 namespace RaylibElectronic
 {
-    public class XorGate : Component
+    public class Splitter : Component
     {
-        public XorGate(Vector2 position)
+        public Splitter(Vector2 position)
         {
-            type = ComponentTypes.XorGate;
+            type = ComponentTypes.Splitter;
             inputCount = 2;
-            outputCount = 1;
+            outputCount = 2;
             this.id = ElectronicSim.components.Count;
             inputConnections = new List<int>(inputCount);
             outputConnections = new List<int>(outputCount);
@@ -28,11 +28,16 @@ namespace RaylibElectronic
         {
             currentInputCount = inputConnections.Count;
             currentOutputCount = outputConnections.Count;
-            
-            if(inputConnections.Count < 2)
-                return;
-            
-            outputs[0] = GetOutputFromOther(0) != GetOutputFromOther(1);
+
+            if (currentInputCount > 0 && currentInputCount < 2)
+            {
+                outputs[1] = GetOutputFromOther(0);
+            }
+            else if (currentInputCount > 1)
+            {
+                outputs[0] = GetOutputFromOther(1);
+                outputs[1] =GetOutputFromOther(0);
+            }
         }
 
         public override void CustomRender()
