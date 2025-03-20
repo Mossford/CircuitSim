@@ -8,19 +8,28 @@ namespace RaylibElectronic
         Button = 0,
         AndGate = 1,
         NotGate = 2,
+        NandGate = 3,
+        OrGate = 4,
+        XorGate = 5,
+        Led = 6,
+        Cross = 7,
+        empty = 8,
     }
 
     public static class ElectronicSim
     {
         public static int componentAmount = Enum.GetNames(typeof(ComponentTypes)).Length;
         public static List<Component> components;
+        public static Queue<int> idsToBeUsed;
 
         public static void Init()
         {
             components = new List<Component>();
+            idsToBeUsed = new Queue<int>();
             for (int i = 0; i < components.Count; i++)
             {
-                components[i].Init();
+                if(components[i].id != -1)
+                    components[i].Init();
             }
         }
 
@@ -28,7 +37,8 @@ namespace RaylibElectronic
         {
             for (int i = 0; i < components.Count; i++)
             {
-                components[i].Update();
+                if(components[i].id != -1)
+                    components[i].Update();
             }
         }
 
@@ -36,47 +46,131 @@ namespace RaylibElectronic
         {
             for (int i = 0; i < components.Count; i++)
             {
-                components[i].Render();
+                if(components[i].id != -1)
+                    components[i].Render();
             }
         }
 
         public static int AddComponent(Vector2 position, ComponentTypes type)
         {
-            int index = components.Count;
-            switch (type)
+            if (idsToBeUsed.Count > 0)
             {
-                default:
+                int index = idsToBeUsed.Dequeue();
+                switch (type)
                 {
-                    components.Add(new Button(position));
-                    break;
+                    default:
+                    {
+                        components[index] = new Button(position);
+                        break;
+                    }
+                    case ComponentTypes.Button:
+                    {
+                        components[index] = new Button(position);
+                        break;
+                    }
+                    case ComponentTypes.AndGate:
+                    {
+                        components[index] = new AndGate(position);
+                        break;
+                    }
+                    case ComponentTypes.NotGate:
+                    {
+                        components[index] = new NotGate(position);
+                        break;
+                    }
+                    case ComponentTypes.NandGate:
+                    {
+                        components[index] = new NandGate(position);
+                        break;
+                    }
+                    case ComponentTypes.OrGate:
+                    {
+                        components[index] = new OrGate(position);
+                        break;
+                    }
+                    case ComponentTypes.XorGate:
+                    {
+                        components[index] = new XorGate(position);
+                        break;
+                    }
+                    case ComponentTypes.Led:
+                    {
+                        components[index] = new Led(position);
+                        break;
+                    }
+                    case ComponentTypes.Cross:
+                    {
+                        components[index] = new Cross(position);
+                        break;
+                    }
                 }
-                case ComponentTypes.Button:
-                {
-                    components.Add(new Button(position));
-                    break;
-                }
-                case ComponentTypes.AndGate:
-                {
-                    components.Add(new AndGate(position));
-                    break;
-                }
-                case ComponentTypes.NotGate:
-                {
-                    components.Add(new NotGate(position));
-                    break;
-                }
-            }
             
-            components[index].Init();
+                components[index].Init();
+                return index;
+            }
+            else
+            {
+                int index = components.Count;
+                switch (type)
+                {
+                    default:
+                    {
+                        components.Add(new Button(position));
+                        break;
+                    }
+                    case ComponentTypes.Button:
+                    {
+                        components.Add(new Button(position));
+                        break;
+                    }
+                    case ComponentTypes.AndGate:
+                    {
+                        components.Add(new AndGate(position));
+                        break;
+                    }
+                    case ComponentTypes.NotGate:
+                    {
+                        components.Add(new NotGate(position));
+                        break;
+                    }
+                    case ComponentTypes.NandGate:
+                    {
+                        components.Add(new NandGate(position));
+                        break;
+                    }
+                    case ComponentTypes.OrGate:
+                    {
+                        components.Add(new OrGate(position));
+                        break;
+                    }
+                    case ComponentTypes.XorGate:
+                    {
+                        components.Add(new XorGate(position));
+                        break;
+                    }
+                    case ComponentTypes.Led:
+                    {
+                        components.Add(new Led(position));
+                        break;
+                    }
+                    case ComponentTypes.Cross:
+                    {
+                        components.Add(new Cross(position));
+                        break;
+                    }
+                }
+            
+                components[index].Init();
 
-            return index;
+                return index;
+            }
         }
 
         public static void DeleteComponent(int index)
         {
             for (int i = 0; i < components[index].inputConnections.Count; i++)
             {
-                components[components[index].inputConnections[i]].outputConnections.RemoveAt(0);
+                components[components[index].inputConnections[i]].outputConnections.Remove(index);
             }
             
             for (int i = 0; i < components[index].outputConnections.Count; i++)
@@ -84,12 +178,8 @@ namespace RaylibElectronic
                 components[components[index].outputConnections[i]].inputConnections.Remove(index);
             }
             
-            components.RemoveAt(index);
-
-            for (int i = index; i < components.Count; i++)
-            {
-                components[i].id--;
-            }
+            idsToBeUsed.Enqueue(index);
+            components[index] = new Empty();
         }
     }
 }

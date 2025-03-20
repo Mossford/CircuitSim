@@ -28,7 +28,7 @@ namespace RaylibElectronic
                 //delete a wire if we want to
                 if (Raylib.IsMouseButtonPressed(MouseButton.Right))
                 {
-                    currentWireCount--;
+                    currentWireCount -= 1 + ElectronicSim.components[currentSelectedSpawnComponent].currentOutputCount + ElectronicSim.components[currentSelectedSpawnComponent].currentInputCount;
                 }
             }
             
@@ -68,7 +68,7 @@ namespace RaylibElectronic
             {
                 wantControl = true;
                 float mouseWheel = Raylib.GetMouseWheelMove();
-                if (mouseWheel > 0)
+                if (mouseWheel != 0f)
                 {
                     currentSpawnComponent = (currentSpawnComponent + (int)mouseWheel) % ElectronicSim.componentAmount;
                     if(currentSpawnComponent < 0)
@@ -91,15 +91,20 @@ namespace RaylibElectronic
                 Raylib.DrawText(((ComponentTypes)currentSpawnComponent).ToString(), (int)Mouse.position.X + 10, (int)Mouse.position.Y - 20, 20, Color.Black);
             }
 
-            if (renderWireLine)
+            if (renderWireLine &&  ElectronicSim.components[currentSelectedSpawnComponent].id != -1)
             {
-                if (currentWireCount > 1)
+                if (currentWireCount > 0)
                 {
-                    Raylib.DrawLineV(ElectronicSim.components[currentSelectedSpawnComponent].inputPositions[ElectronicSim.components[currentSelectedSpawnComponent].inputCount - (currentWireCount - ElectronicSim.components[currentSelectedSpawnComponent].outputCount)], Mouse.position, Color.Black);
-                }
-                else
-                {
-                    Raylib.DrawLineV(ElectronicSim.components[currentSelectedSpawnComponent].outputPositions[0], Mouse.position, Color.Black);
+                    int inputCount = ElectronicSim.components[currentSelectedSpawnComponent].inputCount;
+                    int outputCount = ElectronicSim.components[currentSelectedSpawnComponent].outputCount;
+                    if (currentWireCount > outputCount)
+                    {
+                        Raylib.DrawLineV(ElectronicSim.components[currentSelectedSpawnComponent].inputPositions[(inputCount + outputCount) - currentWireCount], Mouse.position, Color.DarkGray);
+                    }
+                    else
+                    {
+                        Raylib.DrawLineV(ElectronicSim.components[currentSelectedSpawnComponent].outputPositions[outputCount - currentWireCount], Mouse.position, Color.DarkGray);
+                    }
                 }
             }
         }
@@ -118,10 +123,9 @@ namespace RaylibElectronic
             //check if we have a wire
             if (currentWireCount > 0)
             {
-                //do inputs
-                if (currentWireCount > 1)
+                //do the input connects
+                if (currentWireCount > ElectronicSim.components[currentSelectedSpawnComponent].outputCount)
                 {
-                    //for some reason this part is the outputs
                     if (ElectronicSim.components[index].currentOutputCount < ElectronicSim.components[index].outputCount)
                     {
                         ElectronicSim.components[index].outputConnections.Add(currentSelectedSpawnComponent);
@@ -131,7 +135,7 @@ namespace RaylibElectronic
                 }
                 else 
                 {
-                    //and these are the inputs
+                    //do the output connections
                     if (ElectronicSim.components[index].currentInputCount < ElectronicSim.components[index].inputCount)
                     {
                         ElectronicSim.components[currentSelectedSpawnComponent].outputConnections.Add(index);
@@ -146,7 +150,7 @@ namespace RaylibElectronic
             if (ElectronicSim.components[index].currentInputCount < ElectronicSim.components[index].inputCount || ElectronicSim.components[index].currentOutputCount < ElectronicSim.components[index].outputCount)
             {
                 currentSelectedSpawnComponent = index;
-                currentWireCount = (ElectronicSim.components[index].inputCount - ElectronicSim.components[index].currentInputCount) + (ElectronicSim.components[index].outputCount - ElectronicSim.components[index].currentOutputCount);
+                currentWireCount = (ElectronicSim.components[index].inputCount - ElectronicSim.components[index].currentInputCount) + (ElectronicSim.components[index].outputCount- ElectronicSim.components[index].currentOutputCount);
                 return;
             }
             

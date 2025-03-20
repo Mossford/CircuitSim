@@ -59,5 +59,10 @@ namespace RaylibElectronic
             currentInputCount = 0;
             currentOutputCount = outputConnections.Count;
         }
+
+        public override void CustomRender()
+        {
+            
+        }
     }
 }

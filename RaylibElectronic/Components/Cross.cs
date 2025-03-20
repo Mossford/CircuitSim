@@ -2,46 +2,47 @@ using System.Numerics;
 
 namespace RaylibElectronic
 {
-    public class NotGate : Component
+    public class Cross : Component
     {
-        public NotGate(Vector2 position)
+        public Cross(Vector2 position)
         {
-            type = ComponentTypes.NotGate;
+            type = ComponentTypes.Cross;
             inputCount = 1;
-            outputCount = 1;
+            outputCount = 2;
             this.id = ElectronicSim.components.Count;
             inputConnections = new List<int>(1);
-            outputConnections = new List<int>(1);
+            outputConnections = new List<int>(2);
             inputPositions = new List<Vector2>(1);
-            outputPositions = new List<Vector2>(1);
+            outputPositions = new List<Vector2>(2);
             this.position = position;
         }
         
-        public NotGate(int input1, Vector2 position)
+        public Cross(int input1, Vector2 position)
         {
-            type = ComponentTypes.NotGate;
+            type = ComponentTypes.Cross;
             inputCount = 1;
-            outputCount = 1;
+            outputCount = 2;
             this.id = ElectronicSim.components.Count;
             inputConnections = new List<int>(1);
-            outputConnections = new List<int>(1);
+            outputConnections = new List<int>(2);
             inputPositions = new List<Vector2>(1);
-            outputPositions = new List<Vector2>(1);
+            outputPositions = new List<Vector2>(2);
             inputConnections.Add(input1);
             this.position = position;
         }
         
-        public NotGate(int input1, int output, Vector2 position)
+        public Cross(int input1, int output1, int output2, Vector2 position)
         {
-            type = ComponentTypes.NotGate;
+            type = ComponentTypes.Cross;
             inputCount = 1;
-            outputCount = 1;
+            outputCount = 2;
             this.id = ElectronicSim.components.Count;
             inputConnections = new List<int>(1);
-            outputConnections = new List<int>(1);
+            outputConnections = new List<int>(2);
             inputPositions = new List<Vector2>(1);
-            outputPositions = new List<Vector2>(1);
-            outputConnections.Add(output);
+            outputPositions = new List<Vector2>(2);
+            outputConnections.Add(output1);
+            outputConnections.Add(output2);
             inputConnections.Add(input1);
             this.position = position;
         }
@@ -59,7 +60,7 @@ namespace RaylibElectronic
             if(inputConnections.Count < 1)
                 return;
             
-            output = !ElectronicSim.components[inputConnections[0]].output;
+            output = ElectronicSim.components[inputConnections[0]].output;
 
         }
 

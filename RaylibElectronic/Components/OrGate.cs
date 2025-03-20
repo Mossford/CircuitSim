@@ -2,12 +2,11 @@ using System.Numerics;
 
 namespace RaylibElectronic
 {
-    public class AndGate : Component
+    public class OrGate : Component
     {
-        
-        public AndGate(Vector2 position)
+        public OrGate(Vector2 position)
         {
-            type = ComponentTypes.AndGate;
+            type = ComponentTypes.OrGate;
             inputCount = 2;
             outputCount = 1;
             this.id = ElectronicSim.components.Count;
@@ -18,9 +17,9 @@ namespace RaylibElectronic
             this.position = position;
         }
         
-        public AndGate(int input1, int input2, Vector2 position)
+        public OrGate(int input1, int input2, Vector2 position)
         {
-            type = ComponentTypes.AndGate;
+            type = ComponentTypes.OrGate;
             inputCount = 2;
             outputCount = 1;
             this.id = ElectronicSim.components.Count;
@@ -33,9 +32,9 @@ namespace RaylibElectronic
             this.position = position;
         }
         
-        public AndGate(int input1, int input2, int output, Vector2 position)
+        public OrGate(int input1, int input2, int output, Vector2 position)
         {
-            type = ComponentTypes.AndGate;
+            type = ComponentTypes.OrGate;
             inputCount = 2;
             outputCount = 1;
             this.id = ElectronicSim.components.Count;
@@ -61,9 +60,8 @@ namespace RaylibElectronic
             
             if(inputConnections.Count < 2)
                 return;
-            
-            output = ElectronicSim.components[inputConnections[0]].output && ElectronicSim.components[inputConnections[1]].output;
 
+            output = ElectronicSim.components[inputConnections[0]].output || ElectronicSim.components[inputConnections[1]].output;
         }
 
         public override void CustomRender()
