@@ -4,11 +4,14 @@ namespace RaylibElectronic
 {
     public class Testing : Component
     {
+        public static int inputCountSub = 50;
+        public static int outputCountSub = 50;
+        
         public Testing(Vector2 position)
         {
             type = ComponentTypes.testing;
-            inputCount = 50;
-            outputCount = 50;
+            inputCount = inputCountSub;
+            outputCount = outputCountSub;
             this.id = ElectronicSim.components.Count;
             inputConnections = new List<int>(inputCount);
             outputConnections = new List<int>(outputCount);

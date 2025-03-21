@@ -4,11 +4,14 @@ namespace RaylibElectronic
 {
     public class OrGate : Component
     {
+        public static int inputCountSub = 2;
+        public static int outputCountSub = 1;
+        
         public OrGate(Vector2 position)
         {
             type = ComponentTypes.OrGate;
-            inputCount = 2;
-            outputCount = 1;
+            inputCount = inputCountSub;
+            outputCount = outputCountSub;
             this.id = ElectronicSim.components.Count;
             inputConnections = new List<int>(inputCount);
             outputConnections = new List<int>(outputCount);

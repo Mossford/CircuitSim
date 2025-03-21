@@ -4,11 +4,14 @@ namespace RaylibElectronic
 {
     public class Splitter : Component
     {
+        public static int inputCountSub = 2;
+        public static int outputCountSub = 2;
+        
         public Splitter(Vector2 position)
         {
             type = ComponentTypes.Splitter;
-            inputCount = 2;
-            outputCount = 2;
+            inputCount = inputCountSub;
+            outputCount = outputCountSub;
             this.id = ElectronicSim.components.Count;
             inputConnections = new List<int>(inputCount);
             outputConnections = new List<int>(outputCount);

@@ -7,14 +7,13 @@ namespace RaylibElectronic
 {
     public class Program
     {
-        public static Camera2D camera;
         static Vector2 center;
         static float zoom;
         
         public static void Main(String[] args)
         {
             Raylib.InitWindow((int)Window.size.X, (int)Window.size.Y, "Electronic");
-            Raylib.SetWindowState(ConfigFlags.ResizableWindow);
+            Raylib.SetWindowState(ConfigFlags.ResizableWindow | ConfigFlags.Msaa4xHint);
 
             Raylib.SetTargetFPS(60);
             
@@ -33,11 +32,11 @@ namespace RaylibElectronic
         {
             zoom = 1.0f;
             center = new Vector2(Window.size.X / 2f, Window.size.X / 2f);
-            camera = new();
-            camera.Target = new Vector2(Window.size.X / 2f, Window.size.X / 2f);
-            camera.Offset = new Vector2(Window.size.X / 2f, Window.size.X / 2f);
-            camera.Rotation = 0.0f;
-            camera.Zoom = zoom;
+            Global.camera = new();
+            Global.camera.Target = new Vector2(Window.size.X / 2f, Window.size.X / 2f);
+            Global.camera.Offset = new Vector2(Window.size.X / 2f, Window.size.X / 2f);
+            Global.camera.Rotation = 0.0f;
+            Global.camera.Zoom = zoom;
             
             Mouse.Init();
             
@@ -46,11 +45,13 @@ namespace RaylibElectronic
 
         public static void Update()
         {
+            Global.Update();
             Mouse.Update();
-            MouseInteraction.Update();
+            
+            InputInteraction.Update();
 
             //ui control
-            if (!MouseInteraction.wantControl)
+            if (!InputInteraction.wantControl)
             {
                 if (Raylib.IsMouseButtonDown(MouseButton.Middle))
                 {
@@ -61,8 +62,8 @@ namespace RaylibElectronic
             }
             
             zoom = MathF.Abs(zoom);
-            camera.Target = center;
-            camera.Zoom = zoom;
+            Global.camera.Target = center;
+            Global.camera.Zoom = zoom;
             
             ElectronicSim.Update();
         }
@@ -71,10 +72,10 @@ namespace RaylibElectronic
         {
             Raylib.BeginDrawing();
             Raylib.ClearBackground(Color.Gray);
-            Raylib.BeginMode2D(camera);
+            Raylib.BeginMode2D(Global.camera);
             
             ElectronicSim.Render();
-            MouseInteraction.Render();
+            InputInteraction.Render();
             
             Raylib.EndMode2D();
             

@@ -5,12 +5,14 @@ namespace RaylibElectronic
     public class Button : Component
     {
         public bool state;
+        public static int inputCountSub = 0;
+        public static int outputCountSub = 1;
         
         public Button(Vector2 position)
         {
             type = ComponentTypes.Button;
-            inputCount = 0;
-            outputCount = 1;
+            inputCount = inputCountSub;
+            outputCount = outputCountSub;
             this.id = ElectronicSim.components.Count;
             inputConnections = new List<int>(inputCount);
             outputConnections = new List<int>(outputCount);

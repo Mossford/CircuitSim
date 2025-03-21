@@ -4,11 +4,14 @@ namespace RaylibElectronic
 {
     public class Cross : Component
     {
+        public static int inputCountSub = 1;
+        public static int outputCountSub = 2;
+        
         public Cross(Vector2 position)
         {
             type = ComponentTypes.Cross;
-            inputCount = 1;
-            outputCount = 2;
+            inputCount = inputCountSub;
+            outputCount = outputCountSub;
             this.id = ElectronicSim.components.Count;
             inputConnections = new List<int>(inputCount);
             outputConnections = new List<int>(outputCount);

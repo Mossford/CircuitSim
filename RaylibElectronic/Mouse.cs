@@ -20,7 +20,7 @@ namespace RaylibElectronic
         {
             lastPosition = position;
             lastLocalPosition = ((lastPosition * 2) - Window.size) / 2;
-            position = Raylib.GetScreenToWorld2D(Raylib.GetMousePosition(), Program.camera);
+            position = Raylib.GetScreenToWorld2D(Raylib.GetMousePosition(), Global.camera);
             localPosition = ((position * 2) - Window.size) / 2;
         }
     }

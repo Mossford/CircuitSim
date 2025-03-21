@@ -4,12 +4,14 @@ namespace RaylibElectronic
 {
     public class AndGate : Component
     {
+        public static int inputCountSub = 2;
+        public static int outputCountSub = 1;
         
         public AndGate(Vector2 position)
         {
             type = ComponentTypes.AndGate;
-            inputCount = 2;
-            outputCount = 1;
+            inputCount = inputCountSub;
+            outputCount = outputCountSub;
             this.id = ElectronicSim.components.Count;
             inputConnections = new List<int>(inputCount);
             outputConnections = new List<int>(outputCount);

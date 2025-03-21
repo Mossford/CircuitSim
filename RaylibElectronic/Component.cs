@@ -19,9 +19,9 @@ namespace RaylibElectronic
         public Vector2 position;
         public int width;
         public int height;
-        public int padding;
-        public int radius;
         public const int size = 2;
+        public const int radius = 3 * size;
+        public const int padding = radius;
         public int inputCount;
         public int outputCount;
         public int currentInputCount;
@@ -41,9 +41,6 @@ namespace RaylibElectronic
             {
                 outputs.Add(false);
             }
-            
-            radius = 3 * size;
-            padding = radius;
             
             for (int i = 0; i < inputCount; i++)
             {
@@ -139,12 +136,33 @@ namespace RaylibElectronic
             
             CustomRender();
             
-            Raylib.DrawText(type.ToString(), (int)position.X + (width / size / 2), (int)position.Y + (height / size / 2), 15, Color.White);
+            Raylib.DrawText(type.ToString(), (int)position.X + ((width - Raylib.MeasureText(type.ToString(), 15)) / 2), (int)position.Y + ((height - 15) / 2), 15, Color.White);
         }
 
         public void HighLight()
         {
-            Raylib.DrawRectangleLines((int)position.X - 5, (int)position.Y - 5, width + 10, height + 10, Color.Yellow);
+            Raylib.DrawRectangleLines((int)position.X - Global.posAnimate, (int)position.Y - Global.posAnimate, width + Global.sizeAnimate, height + Global.sizeAnimate, Color.Yellow);
         }
+
+        public void Copy(in Component other)
+        {
+            id = other.id;
+            inputConnections = other.inputConnections;
+            inputPositions = other.inputPositions;
+            outputConnections = other.outputConnections;
+            outputPositions = other.outputPositions;
+            outputs = other.outputs;
+            outputConnectionsOther = other.outputConnectionsOther;
+            position = other.position;
+            width = other.width;
+            height = other.height;
+            inputCount = other.inputCount;
+            outputCount = other.outputCount;
+            currentInputCount = other.currentInputCount;
+            currentOutputCount = other.currentOutputCount;
+            highLight = other.highLight;
+            type = other.type;
+        }
+        
     }
 }

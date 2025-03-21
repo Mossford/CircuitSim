@@ -5,11 +5,14 @@ namespace RaylibElectronic
 {
     public class Led : Component
     {
+        public static int inputCountSub = 1;
+        public static int outputCountSub = 0;
+        
         public Led(Vector2 position)
         {
             type = ComponentTypes.Led;
-            inputCount = 1;
-            outputCount = 0;
+            inputCount = inputCountSub;
+            outputCount = outputCountSub;
             this.id = ElectronicSim.components.Count;
             inputConnections = new List<int>(inputCount);
             outputConnections = new List<int>(outputCount);
