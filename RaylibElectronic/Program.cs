@@ -9,13 +9,14 @@ namespace RaylibElectronic
     {
         static Vector2 center;
         static float zoom;
+        static float totalTimeUpdate;
         
         public static void Main(String[] args)
         {
             Raylib.InitWindow((int)Window.size.X, (int)Window.size.Y, "Electronic");
             Raylib.SetWindowState(ConfigFlags.ResizableWindow | ConfigFlags.Msaa4xHint);
 
-            Raylib.SetTargetFPS(60);
+            Raylib.SetTargetFPS(10000);
             
             Init();
             
@@ -77,6 +78,17 @@ namespace RaylibElectronic
             Global.camera.Target = center;
             Global.camera.Zoom = zoom;
             
+            totalTimeUpdate += Raylib.GetFrameTime();
+            while (totalTimeUpdate >= Global.fixedDelta)
+            {
+                totalTimeUpdate -= Global.fixedDelta;
+                FixedUpdate();
+            }
+            
+        }
+
+        public static void FixedUpdate()
+        {
             ElectronicSim.Update();
         }
 

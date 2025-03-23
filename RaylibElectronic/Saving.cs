@@ -83,65 +83,23 @@ namespace RaylibElectronic
 
                 ComponentTypes type = (ComponentTypes)reader.ReadInt32();
                 Vector2 position = Vector2.Zero;
-                
-                switch (type)
+
+                component = type switch
                 {
-                    default:
-                    {
-                        component = new Button(position);
-                        break;
-                    }
-                    case ComponentTypes.Button:
-                    {
-                        component = new Button(position);
-                        break;
-                    }
-                    case ComponentTypes.AndGate:
-                    {
-                        component = new AndGate(position);
-                        break;
-                    }
-                    case ComponentTypes.NotGate:
-                    {
-                        component = new NotGate(position);
-                        break;
-                    }
-                    case ComponentTypes.NandGate:
-                    {
-                        component = new NandGate(position);
-                        break;
-                    }
-                    case ComponentTypes.OrGate:
-                    {
-                        component = new OrGate(position);
-                        break;
-                    }
-                    case ComponentTypes.XorGate:
-                    {
-                        component = new XorGate(position);
-                        break;
-                    }
-                    case ComponentTypes.Led:
-                    {
-                        component = new Led(position);
-                        break;
-                    }
-                    case ComponentTypes.Cross:
-                    {
-                        component = new Cross(position);
-                        break;
-                    }
-                    case ComponentTypes.Splitter:
-                    {
-                        component = new Splitter(position);
-                        break;
-                    }
-                    case ComponentTypes.testing:
-                    {
-                        component = new Testing(position);
-                        break;
-                    }
-                }
+                    ComponentTypes.Button => new Button(position),
+                    ComponentTypes.AndGate => new AndGate(position),
+                    ComponentTypes.NotGate => new NotGate(position),
+                    ComponentTypes.NandGate => new NandGate(position),
+                    ComponentTypes.OrGate => new OrGate(position),
+                    ComponentTypes.XorGate => new XorGate(position),
+                    ComponentTypes.Led => new Led(position),
+                    ComponentTypes.Cross => new Cross(position),
+                    ComponentTypes.Splitter => new Splitter(position),
+                    ComponentTypes.Testing => new Testing(position),
+                    ComponentTypes.Clock => new Clock(position),
+                    ComponentTypes.Scope => new Scope(position),
+                    _ => new Button(position)
+                };
 
                 component.id = reader.ReadInt32();
                 component.inputConnections = ReadArray<int>(reader, data).ToList();

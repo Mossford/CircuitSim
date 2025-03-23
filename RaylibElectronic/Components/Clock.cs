@@ -2,14 +2,17 @@ using System.Numerics;
 
 namespace RaylibElectronic
 {
-    public class Testing : Component
+    public class Clock : Component
     {
-        public static int inputCountSub = 50;
-        public static int outputCountSub = 50;
+        public float frequency;
+        public float dutyCycle;
+        float pastTime;
+        public static int inputCountSub = 0;
+        public static int outputCountSub = 1;
         
-        public Testing(Vector2 position)
+        public Clock(Vector2 position)
         {
-            type = ComponentTypes.Testing;
+            type = ComponentTypes.Clock;
             inputCount = inputCountSub;
             outputCount = outputCountSub;
             this.id = ElectronicSim.components.Count;
@@ -20,8 +23,12 @@ namespace RaylibElectronic
             outputConnectionsOther = new Dictionary<int, int>();
             outputs = new List<bool>(outputCount);
             this.position = position;
+
+            frequency = 10;
+            dutyCycle = 1f;
         }
-            
+        
+        
         public override void Init()
         {
             PreCalculate();
@@ -29,18 +36,20 @@ namespace RaylibElectronic
 
         public override void Update()
         {
-            currentInputCount = inputConnections.Count;
-            currentOutputCount = outputConnections.Count;
-            
-            for (int i = 0; i < currentInputCount; i++)
+            //once the frequency goes above 1/60 then we will not have a consistent rate
+            pastTime += Global.fixedDelta;
+            if (pastTime >= dutyCycle / frequency)
             {
-                outputs[i] = GetOutputFromOther(i);
+                outputs[0] = !outputs[0];
+                pastTime = 0f;
             }
+            currentInputCount = 0;
+            currentOutputCount = outputConnections.Count;
         }
 
         public override void CustomRender()
         {
-                
+            
         }
     }
 }

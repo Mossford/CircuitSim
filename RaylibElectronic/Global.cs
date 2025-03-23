@@ -9,6 +9,11 @@ namespace RaylibElectronic
         public static int posAnimate;
         public static int sizeAnimate;
 
+        /// <summary>
+        /// In seconds
+        /// </summary>
+        public static float fixedDelta = 1f / 60f;
+
         public static void Update()
         {
             sinTime = MathF.Sin((float)Raylib.GetTime() * 10f);

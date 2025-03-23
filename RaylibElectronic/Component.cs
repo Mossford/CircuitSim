@@ -144,9 +144,10 @@ namespace RaylibElectronic
                 HighLight();
             }
             
+            Raylib.DrawText(type.ToString(), (int)position.X + ((width - Raylib.MeasureText(type.ToString(), 15)) / 2), (int)position.Y + ((height - 15) / 2), 15, Color.White);
+            
             CustomRender();
             
-            Raylib.DrawText(type.ToString(), (int)position.X + ((width - Raylib.MeasureText(type.ToString(), 15)) / 2), (int)position.Y + ((height - 15) / 2), 15, Color.White);
         }
 
         public void HighLight()

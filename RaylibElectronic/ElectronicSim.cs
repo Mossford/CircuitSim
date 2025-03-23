@@ -14,7 +14,9 @@ namespace RaylibElectronic
         Led = 6,
         Cross = 7,
         Splitter = 8,
-        testing = 9,
+        Testing = 9,
+        Clock = 10,
+        Scope = 11,
         empty,
     }
 
@@ -58,129 +60,46 @@ namespace RaylibElectronic
             if (idsToBeUsed.Count > 0)
             {
                 int index = idsToBeUsed.Dequeue();
-                switch (type)
+                components[index] = type switch
                 {
-                    default:
-                    {
-                        components[index] = new Button(position);
-                        break;
-                    }
-                    case ComponentTypes.Button:
-                    {
-                        components[index] = new Button(position);
-                        break;
-                    }
-                    case ComponentTypes.AndGate:
-                    {
-                        components[index] = new AndGate(position);
-                        break;
-                    }
-                    case ComponentTypes.NotGate:
-                    {
-                        components[index] = new NotGate(position);
-                        break;
-                    }
-                    case ComponentTypes.NandGate:
-                    {
-                        components[index] = new NandGate(position);
-                        break;
-                    }
-                    case ComponentTypes.OrGate:
-                    {
-                        components[index] = new OrGate(position);
-                        break;
-                    }
-                    case ComponentTypes.XorGate:
-                    {
-                        components[index] = new XorGate(position);
-                        break;
-                    }
-                    case ComponentTypes.Led:
-                    {
-                        components[index] = new Led(position);
-                        break;
-                    }
-                    case ComponentTypes.Cross:
-                    {
-                        components[index] = new Cross(position);
-                        break;
-                    }
-                    case ComponentTypes.Splitter:
-                    {
-                        components[index] = new Splitter(position);
-                        break;
-                    }
-                    case ComponentTypes.testing:
-                    {
-                        components[index] = new Testing(position);
-                        break;
-                    }
-                }
-            
+                    ComponentTypes.Button => new Button(position),
+                    ComponentTypes.AndGate => new AndGate(position),
+                    ComponentTypes.NotGate => new NotGate(position),
+                    ComponentTypes.NandGate => new NandGate(position),
+                    ComponentTypes.OrGate => new OrGate(position),
+                    ComponentTypes.XorGate => new XorGate(position),
+                    ComponentTypes.Led => new Led(position),
+                    ComponentTypes.Cross => new Cross(position),
+                    ComponentTypes.Splitter => new Splitter(position),
+                    ComponentTypes.Testing => new Testing(position),
+                    ComponentTypes.Clock => new Clock(position),
+                    ComponentTypes.Scope => new Scope(position),
+                    _ => new Button(position)
+                };
+
                 components[index].Init();
                 return index;
             }
             else
             {
                 int index = components.Count;
-                switch (type)
+                components.Add(new Component());
+                components[index] = type switch
                 {
-                    default:
-                    {
-                        components.Add(new Button(position));
-                        break;
-                    }
-                    case ComponentTypes.Button:
-                    {
-                        components.Add(new Button(position));
-                        break;
-                    }
-                    case ComponentTypes.AndGate:
-                    {
-                        components.Add(new AndGate(position));
-                        break;
-                    }
-                    case ComponentTypes.NotGate:
-                    {
-                        components.Add(new NotGate(position));
-                        break;
-                    }
-                    case ComponentTypes.NandGate:
-                    {
-                        components.Add(new NandGate(position));
-                        break;
-                    }
-                    case ComponentTypes.OrGate:
-                    {
-                        components.Add(new OrGate(position));
-                        break;
-                    }
-                    case ComponentTypes.XorGate:
-                    {
-                        components.Add(new XorGate(position));
-                        break;
-                    }
-                    case ComponentTypes.Led:
-                    {
-                        components.Add(new Led(position));
-                        break;
-                    }
-                    case ComponentTypes.Cross:
-                    {
-                        components.Add(new Cross(position));
-                        break;
-                    }
-                    case ComponentTypes.Splitter:
-                    {
-                        components.Add(new Splitter(position));
-                        break;
-                    }
-                    case ComponentTypes.testing:
-                    {
-                        components.Add(new Testing(position));
-                        break;
-                    }
-                }
+                    ComponentTypes.Button => new Button(position),
+                    ComponentTypes.AndGate => new AndGate(position),
+                    ComponentTypes.NotGate => new NotGate(position),
+                    ComponentTypes.NandGate => new NandGate(position),
+                    ComponentTypes.OrGate => new OrGate(position),
+                    ComponentTypes.XorGate => new XorGate(position),
+                    ComponentTypes.Led => new Led(position),
+                    ComponentTypes.Cross => new Cross(position),
+                    ComponentTypes.Splitter => new Splitter(position),
+                    ComponentTypes.Testing => new Testing(position),
+                    ComponentTypes.Clock => new Clock(position),
+                    ComponentTypes.Scope => new Scope(position),
+                    _ => new Button(position)
+                };
             
                 components[index].Init();
 
@@ -190,6 +109,11 @@ namespace RaylibElectronic
 
         public static void DeleteComponent(int index)
         {
+            for (int i = 0; i < components[index].outputConnections.Count; i++)
+            {
+                components[components[index].outputConnections[i]].outputs[components[components[index].outputConnections[i]].outputConnectionsOther[index]] = false;
+            }
+            
             for (int i = 0; i < components[index].inputConnections.Count; i++)
             {
                 components[components[index].inputConnections[i]].outputConnections.Remove(index);
@@ -199,7 +123,6 @@ namespace RaylibElectronic
             for (int i = 0; i < components[index].outputConnections.Count; i++)
             {
                 components[components[index].outputConnections[i]].inputConnections.Remove(index);
-                components[components[index].outputConnections[i]].outputs[components[components[index].outputConnections[i]].outputConnectionsOther[index]] = false;
             }
             
             idsToBeUsed.Enqueue(index);

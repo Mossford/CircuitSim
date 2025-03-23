@@ -263,10 +263,22 @@ namespace RaylibElectronic
                         outputCount = Splitter.outputCountSub;
                         break;
                     }
-                    case ComponentTypes.testing:
+                    case ComponentTypes.Testing:
                     {
                         inputCount = Testing.inputCountSub;
                         outputCount = Testing.outputCountSub;
+                        break;
+                    }
+                    case ComponentTypes.Clock:
+                    {
+                        inputCount = Clock.inputCountSub;
+                        outputCount = Clock.outputCountSub;
+                        break;
+                    }
+                    case ComponentTypes.Scope:
+                    {
+                        inputCount = Scope.inputCountSub;
+                        outputCount = Scope.outputCountSub;
                         break;
                     }
                 }
@@ -385,8 +397,9 @@ namespace RaylibElectronic
                     ((Button)ElectronicSim.components[index]).state = !((Button)ElectronicSim.components[index]).state;
                     break;
                 }
-                case ComponentTypes.AndGate:
+                case ComponentTypes.Scope:
                 {
+                    ((Scope)ElectronicSim.components[index]).state = !((Scope)ElectronicSim.components[index]).state;
                     break;
                 }
             }
