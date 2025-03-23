@@ -161,6 +161,17 @@ namespace RaylibElectronic
                 }
             }
             
+            //deselect all
+            if (Raylib.IsKeyDown(KeyboardKey.LeftShift) && Raylib.IsKeyPressed(KeyboardKey.C) && !Raylib.IsKeyDown(KeyboardKey.LeftControl))
+            {
+                foreach (KeyValuePair<int, int> component in currentSelectedComponents)
+                {
+                    ElectronicSim.components[component.Key].highLight = false;
+                }
+                currentSelectedComponents.Clear();
+            }
+            
+            //spawn component
             if (Raylib.IsKeyDown(KeyboardKey.LeftControl) && !Raylib.IsKeyDown(KeyboardKey.V) && !Raylib.IsKeyPressed(KeyboardKey.C))
             {
                 wantControl = true;
@@ -185,8 +196,6 @@ namespace RaylibElectronic
         {
             if (renderSpawnText)
             {
-                Raylib.DrawText(((ComponentTypes)currentSpawnComponent).ToString(), (int)Mouse.position.X + 10, (int)Mouse.position.Y - 20, 20, Color.Black);
-                
                 int width = 0;
                 int height = 0;
                 int inputCount = 0;
@@ -196,8 +205,14 @@ namespace RaylibElectronic
                 {
                     default:
                     {
-                        inputCount = AndGate.inputCountSub;
-                        outputCount = AndGate.outputCountSub;
+                        inputCount = Button.inputCountSub;
+                        outputCount = Button.outputCountSub;
+                        break;
+                    }
+                    case ComponentTypes.Button:
+                    {
+                        inputCount = Button.inputCountSub;
+                        outputCount = Button.outputCountSub;
                         break;
                     }
                     case ComponentTypes.AndGate:
@@ -262,8 +277,8 @@ namespace RaylibElectronic
                     height = ((outputCount) * (Component.radius + Component.padding)) + (outputCount * Component.radius) + Component.padding;
                 width = Raylib.MeasureText(((ComponentTypes)currentSpawnComponent).ToString(), 15) * Component.size;
                 
-                Raylib.DrawRectangle((int)Mouse.position.X, (int)Mouse.position.Y, width, height, Color.Black);
-                Raylib.DrawText(((ComponentTypes)currentSpawnComponent).ToString(), (int)Mouse.position.X + ((width - Raylib.MeasureText(((ComponentTypes)currentSpawnComponent).ToString(), 15)) / 2), (int)Mouse.position.Y + ((height - 15) / 2), 15, Color.White);
+                Raylib.DrawRectangle((int)Mouse.position.X - (width / 2), (int)Mouse.position.Y - (height / 2), width, height, Color.Black);
+                Raylib.DrawText(((ComponentTypes)currentSpawnComponent).ToString(), (int)Mouse.position.X + ((width - Raylib.MeasureText(((ComponentTypes)currentSpawnComponent).ToString(), 15)) / 2) - (width / 2), (int)Mouse.position.Y + ((height - 15) / 2) - (height / 2), 15, Color.White);
             }
 
             if (renderWireLine &&  ElectronicSim.components[currentSelectedSpawnComponent].id != -1)
@@ -311,6 +326,7 @@ namespace RaylibElectronic
         static void SpawnComponent()
         {
             int index = ElectronicSim.AddComponent(Mouse.position, (ComponentTypes)currentSpawnComponent);
+            ElectronicSim.components[index].position = Mouse.position - new Vector2(ElectronicSim.components[index].width / 2f, ElectronicSim.components[index].height / 2f);
             currentSelectedSpawnComponent = index;
             currentWireCount = ElectronicSim.components[index].inputCount + ElectronicSim.components[index].outputCount;
         }

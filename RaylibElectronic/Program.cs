@@ -19,7 +19,7 @@ namespace RaylibElectronic
             
             Init();
             
-            Saving.Load("4BitAdder.circuit");
+            Saving.Load(DateTime.Now.ToLongDateString() + ".circuit");
             
             while (!Raylib.WindowShouldClose())
             {
@@ -66,6 +66,11 @@ namespace RaylibElectronic
             if (Raylib.IsKeyPressed(KeyboardKey.S))
             {
                 Saving.Save();
+            }
+            
+            if (Raylib.IsKeyPressed(KeyboardKey.R))
+            {
+                ElectronicSim.Clear();
             }
             
             zoom = MathF.Abs(zoom);
