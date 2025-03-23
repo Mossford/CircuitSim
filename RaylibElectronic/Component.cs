@@ -5,7 +5,7 @@ using Raylib_cs;
 
 namespace RaylibElectronic
 {
-    public abstract class Component
+    public class Component
     {
         //will just instantly connect to another component
         public int id;
@@ -29,11 +29,21 @@ namespace RaylibElectronic
         public bool highLight;
         public ComponentTypes type;
 
-        public abstract void Init();
+        public virtual void Init()
+        {
+            
+        }
 
         //will send a signal based on what's here
-        public abstract void Update();
-        public abstract void CustomRender();
+        public virtual void Update()
+        {
+            
+        }
+
+        public virtual void CustomRender()
+        {
+            
+        }
 
         public void PreCalculate()
         {

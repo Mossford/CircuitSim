@@ -205,5 +205,11 @@ namespace RaylibElectronic
             idsToBeUsed.Enqueue(index);
             components[index] = new Empty();
         }
+
+        public static void Clear()
+        {
+            components.Clear();
+            idsToBeUsed.Clear();
+        }
     }
 }

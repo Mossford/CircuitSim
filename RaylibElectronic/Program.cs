@@ -19,6 +19,8 @@ namespace RaylibElectronic
             
             Init();
             
+            Saving.Load("4BitAdder.circuit");
+            
             while (!Raylib.WindowShouldClose())
             {
                 Update();
@@ -59,6 +61,11 @@ namespace RaylibElectronic
                 }
 
                 zoom += Raylib.GetMouseWheelMove() / 10f;
+            }
+
+            if (Raylib.IsKeyPressed(KeyboardKey.S))
+            {
+                Saving.Save();
             }
             
             zoom = MathF.Abs(zoom);

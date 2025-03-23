@@ -11,4 +11,23 @@
       <PackageReference Include="Raylib-cs" Version="7.0.1" />
     </ItemGroup>
 
+    <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+        <MakeDir Directories="$(TargetDir)Circuits" />
+        <ItemGroup>
+            <FilesToCopy Include="Circuits\*" />
+        </ItemGroup>
+        <Copy
+                SourceFiles="@(FilesToCopy)"
+                DestinationFiles="@(FilesToCopy->'$(TargetDir)Circuits\%(RecursiveDir)%(Filename)%(Extension)')" />
+    </Target>
+    <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
+        <MakeDir Directories="$(TargetDir)Circuits" />
+        <ItemGroup>
+            <FilesToCopy Include="Circuits\*" />
+        </ItemGroup>
+        <Copy
+                SourceFiles="@(FilesToCopy)"
+                DestinationFiles="@(FilesToCopy->'$(TargetDir)Circuits\%(RecursiveDir)%(Filename)%(Extension)')" />
+    </Target>
+
 </Project>
