@@ -38,156 +38,207 @@ namespace RaylibElectronic
                 }
             }
             
-            for (int i = 0; i < ElectronicSim.components.Count; i++)
+            if (Raylib.IsKeyDown(KeyboardKey.LeftControl) && !Raylib.IsKeyDown(KeyboardKey.LeftShift))
             {
-                if (ElectronicSim.components[i].InBounds(Mouse.position))
+                for (int i = 0; i < ElectronicSim.components.Count; i++)
                 {
-                    ElectronicSim.components[i].highLight = true;
-                    //try to interact with component
-                    if (Raylib.IsMouseButtonPressed(MouseButton.Left) && !Raylib.IsKeyDown(KeyboardKey.LeftShift) && !Raylib.IsKeyDown(KeyboardKey.LeftControl))
+                    if (ElectronicSim.components[i].InBounds(Mouse.position))
                     {
-                        wantControl = true;
-                        InteractComponent(i);
-                    }
+                        ElectronicSim.components[i].highLight = true;
 
-                    //try to delete component
-                    if (Raylib.IsMouseButtonPressed(MouseButton.Right) && Raylib.IsKeyDown(KeyboardKey.LeftControl) && !Raylib.IsKeyDown(KeyboardKey.LeftShift))
-                    {
-                        ElectronicSim.DeleteComponent(i);
-                    }
-                    
-                    //try to select component
-                    if (Raylib.IsMouseButtonPressed(MouseButton.Left) && Raylib.IsKeyDown(KeyboardKey.LeftShift))
-                    {
-                        if (!currentSelectedComponents.TryAdd(i, i))
+                        //try to delete component
+                        if (Raylib.IsMouseButtonPressed(MouseButton.Right))
                         {
-                            ElectronicSim.components[i].highLight = false;
-                            currentSelectedComponents.Remove(i);
+                            ElectronicSim.DeleteComponent(i);
                         }
                     }
-                    
-                    //try to deselect component
-                    if (Raylib.IsMouseButtonPressed(MouseButton.Right) && Raylib.IsKeyDown(KeyboardKey.LeftShift))
+                    else
                     {
-                        currentSelectedComponents.Remove(i);
-                        ElectronicSim.components[i].highLight = false;
+                        if(!currentSelectedComponents.ContainsKey(i))
+                            ElectronicSim.components[i].highLight = false;
                     }
                 }
-                else
-                {
-                    if(!currentSelectedComponents.ContainsKey(i))
-                        ElectronicSim.components[i].highLight = false;
-                }
-            }
-            
-            //try to move components
-            if (Raylib.IsMouseButtonDown(MouseButton.Left))
-            {
-                MoveComponent();
-                wantControl = true;
-            }
-            
-            //copy components to clipboard
-            if (Raylib.IsKeyDown(KeyboardKey.LeftControl) && Raylib.IsKeyPressed(KeyboardKey.C))
-            {
-                renderClipboardBounds = true;
-                clipboard.Clear();
-                foreach (var pair in currentSelectedComponents)
-                {
-                    clipboard.Add(pair.Key);
-                }
                 
-                Vector2 min = Vector2.PositiveInfinity;
-                Vector2 max = Vector2.NegativeInfinity;
-
-                for (int i = 0; i < clipboard.Count; i++)
+                //copy components to clipboard
+                if (Raylib.IsKeyPressed(KeyboardKey.C))
                 {
-                    Vector2 posMax = ElectronicSim.components[clipboard[i]].position + new Vector2(ElectronicSim.components[clipboard[i]].width, ElectronicSim.components[clipboard[i]].height);
-                    Vector2 posMin = ElectronicSim.components[clipboard[i]].position;
-                    if (posMax.X < min.X)
-                        min.X = posMax.X;
-                    if (posMax.Y < min.Y)
-                        min.Y = posMax.Y;
-                    if (posMax.X > max.X)
-                        max.X = posMax.X;
-                    if (posMax.Y > max.Y)
-                        max.Y = posMax.Y;
+                    renderClipboardBounds = true;
+                    clipboard.Clear();
+                    foreach (var pair in currentSelectedComponents)
+                    {
+                        clipboard.Add(pair.Key);
+                    }
+                
+                    Vector2 min = Vector2.PositiveInfinity;
+                    Vector2 max = Vector2.NegativeInfinity;
+
+                    for (int i = 0; i < clipboard.Count; i++)
+                    {
+                        Vector2 posMax = ElectronicSim.components[clipboard[i]].position + new Vector2(ElectronicSim.components[clipboard[i]].width, ElectronicSim.components[clipboard[i]].height);
+                        Vector2 posMin = ElectronicSim.components[clipboard[i]].position;
+                        if (posMax.X < min.X)
+                            min.X = posMax.X;
+                        if (posMax.Y < min.Y)
+                            min.Y = posMax.Y;
+                        if (posMax.X > max.X)
+                            max.X = posMax.X;
+                        if (posMax.Y > max.Y)
+                            max.Y = posMax.Y;
                     
-                    if (posMin.X < min.X)
-                        min.X = posMin.X;
-                    if (posMin.Y < min.Y)
-                        min.Y = posMin.Y;
-                    if (posMin.X > max.X)
-                        max.X = posMin.X;
-                    if (posMin.Y > max.Y)
-                        max.Y = posMin.Y;
-                }
+                        if (posMin.X < min.X)
+                            min.X = posMin.X;
+                        if (posMin.Y < min.Y)
+                            min.Y = posMin.Y;
+                        if (posMin.X > max.X)
+                            max.X = posMin.X;
+                        if (posMin.Y > max.Y)
+                            max.Y = posMin.Y;
+                    }
 
-                clipboardMax = max;
-                clipboardMin = min;
-            }
-            
-            //delete selection
-            if (Raylib.IsKeyDown(KeyboardKey.LeftControl) && Raylib.IsKeyPressed(KeyboardKey.X))
-            {
-                foreach (KeyValuePair<int, int> component in currentSelectedComponents)
-                {
-                    ElectronicSim.DeleteComponent(component.Key);
-                }
-
-                currentSelectedComponents.Clear();
-            }
-            
-            //clear clipboard
-            if (!Raylib.IsKeyDown(KeyboardKey.LeftControl) && Raylib.IsKeyPressed(KeyboardKey.C))
-            {
-                renderClipboardBounds = false;
-                clipboard.Clear();
-                clipboardMax = Vector2.Zero;
-                clipboardMin = Vector2.Zero;
-            }
-            
-            //paste components from clipboard
-            if (Raylib.IsKeyDown(KeyboardKey.LeftControl) && Raylib.IsKeyDown(KeyboardKey.V))
-            {
-                renderPasteBounds = true;
-            }
-            if (Raylib.IsKeyReleased(KeyboardKey.V))
-            {
-                Vector2 diff = Mouse.position - ((clipboardMin + clipboardMax) / 2f);
-                for (int i = 0; i < clipboard.Count; i++)
-                {
-                    ElectronicSim.AddComponent(ElectronicSim.components[clipboard[i]].position + diff, ElectronicSim.components[clipboard[i]].type);
-                }
-            }
-            
-            //deselect all
-            if (Raylib.IsKeyDown(KeyboardKey.LeftShift) && Raylib.IsKeyPressed(KeyboardKey.C) && !Raylib.IsKeyDown(KeyboardKey.LeftControl))
-            {
-                foreach (KeyValuePair<int, int> component in currentSelectedComponents)
-                {
-                    ElectronicSim.components[component.Key].highLight = false;
-                }
-                currentSelectedComponents.Clear();
-            }
-            
-            //spawn component
-            if (Raylib.IsKeyDown(KeyboardKey.LeftControl) && !Raylib.IsKeyDown(KeyboardKey.V) && !Raylib.IsKeyPressed(KeyboardKey.C))
-            {
-                wantControl = true;
-                float mouseWheel = Raylib.GetMouseWheelMove();
-                if (mouseWheel != 0f)
-                {
-                    currentSpawnComponent = (currentSpawnComponent + (int)mouseWheel) % (ElectronicSim.componentAmount - 1);
-                    if(currentSpawnComponent < 0)
-                        currentSpawnComponent = ElectronicSim.componentAmount - 2;
+                    clipboardMax = max;
+                    clipboardMin = min;
                 }
                 
-                renderSpawnText = true;
-
-                if (Raylib.IsMouseButtonPressed(MouseButton.Left))
+                //delete selection
+                if (Raylib.IsKeyPressed(KeyboardKey.X))
                 {
-                    SpawnComponent();
+                    foreach (KeyValuePair<int, int> component in currentSelectedComponents)
+                    {
+                        ElectronicSim.DeleteComponent(component.Key);
+                    }
+
+                    currentSelectedComponents.Clear();
+                }
+                
+                //paste components from clipboard
+                if (Raylib.IsKeyDown(KeyboardKey.V))
+                {
+                    renderPasteBounds = true;
+                }
+                //paste once released
+                if (Raylib.IsKeyReleased(KeyboardKey.V))
+                {
+                    Vector2 diff = Mouse.position - ((clipboardMin + clipboardMax) / 2f);
+                    for (int i = 0; i < clipboard.Count; i++)
+                    {
+                        ElectronicSim.AddComponent(ElectronicSim.components[clipboard[i]].position + diff, ElectronicSim.components[clipboard[i]].type);
+                    }
+                }
+                
+                //spawn component
+                if (!Raylib.IsKeyDown(KeyboardKey.V) && !Raylib.IsKeyPressed(KeyboardKey.C))
+                {
+                    wantControl = true;
+                    float mouseWheel = Raylib.GetMouseWheelMove();
+                    if (mouseWheel != 0f)
+                    {
+                        currentSpawnComponent = (currentSpawnComponent + (int)mouseWheel) % (ElectronicSim.componentAmount - 1);
+                        if(currentSpawnComponent < 0)
+                            currentSpawnComponent = ElectronicSim.componentAmount - 2;
+                    }
+                
+                    renderSpawnText = true;
+
+                    if (Raylib.IsMouseButtonPressed(MouseButton.Left))
+                    {
+                        SpawnComponent();
+                    }
+                }
+            }
+            else if (Raylib.IsKeyDown(KeyboardKey.LeftShift))
+            {
+                for (int i = 0; i < ElectronicSim.components.Count; i++)
+                {
+                    if (ElectronicSim.components[i].InBounds(Mouse.position))
+                    {
+                        ElectronicSim.components[i].highLight = true;
+                    
+                        //try to select component
+                        if (Raylib.IsMouseButtonPressed(MouseButton.Left))
+                        {
+                            if (!currentSelectedComponents.TryAdd(i, i))
+                            {
+                                ElectronicSim.components[i].highLight = false;
+                                currentSelectedComponents.Remove(i);
+                            }
+                        }
+                    
+                        //try to deselect component
+                        if (Raylib.IsMouseButtonPressed(MouseButton.Right))
+                        {
+                            currentSelectedComponents.Remove(i);
+                            ElectronicSim.components[i].highLight = false;
+                        }
+                    }
+                    else
+                    {
+                        if(!currentSelectedComponents.ContainsKey(i))
+                            ElectronicSim.components[i].highLight = false;
+                    }
+                }
+                
+                //deselect all
+                if (Raylib.IsKeyPressed(KeyboardKey.C))
+                {
+                    foreach (KeyValuePair<int, int> component in currentSelectedComponents)
+                    {
+                        ElectronicSim.components[component.Key].highLight = false;
+                    }
+                    currentSelectedComponents.Clear();
+                }
+                
+                //try to move components
+                if (Raylib.IsMouseButtonDown(MouseButton.Left))
+                {
+                    MoveComponent();
+                    wantControl = true;
+                }
+            }
+            else
+            {
+                for (int i = 0; i < ElectronicSim.components.Count; i++)
+                {
+                    if (ElectronicSim.components[i].InBounds(Mouse.position))
+                    {
+                        ElectronicSim.components[i].highLight = true;
+                        //try to interact with component
+                        if (Raylib.IsMouseButtonPressed(MouseButton.Left))
+                        {
+                            wantControl = true;
+                            InteractComponent(i);
+                        }
+                    }
+                    else
+                    {
+                        if(!currentSelectedComponents.ContainsKey(i))
+                            ElectronicSim.components[i].highLight = false;
+                    }
+                }
+                
+                //clear clipboard
+                if (Raylib.IsKeyPressed(KeyboardKey.C))
+                {
+                    renderClipboardBounds = false;
+                    clipboard.Clear();
+                    clipboardMax = Vector2.Zero;
+                    clipboardMin = Vector2.Zero;
+                }
+                
+                //paste once released
+                if (Raylib.IsKeyReleased(KeyboardKey.V))
+                {
+                    Vector2 diff = Mouse.position - ((clipboardMin + clipboardMax) / 2f);
+                    for (int i = 0; i < clipboard.Count; i++)
+                    {
+                        ElectronicSim.AddComponent(ElectronicSim.components[clipboard[i]].position + diff, ElectronicSim.components[clipboard[i]].type);
+                    }
+                }
+                
+                //try to move components
+                if (Raylib.IsMouseButtonDown(MouseButton.Left))
+                {
+                    MoveComponent();
+                    wantControl = true;
                 }
             }
         }

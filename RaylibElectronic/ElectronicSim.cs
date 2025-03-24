@@ -109,11 +109,6 @@ namespace RaylibElectronic
 
         public static void DeleteComponent(int index)
         {
-            for (int i = 0; i < components[index].outputConnections.Count; i++)
-            {
-                components[components[index].outputConnections[i]].outputs[components[components[index].outputConnections[i]].outputConnectionsOther[index]] = false;
-            }
-            
             for (int i = 0; i < components[index].inputConnections.Count; i++)
             {
                 components[components[index].inputConnections[i]].outputConnections.Remove(index);
