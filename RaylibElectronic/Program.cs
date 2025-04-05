@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using Raylib_cs;
+using ZeroElectric.Vinculum;
 using System.Numerics;
 
 namespace RaylibElectronic
@@ -14,13 +14,14 @@ namespace RaylibElectronic
         public static void Main(String[] args)
         {
             Raylib.InitWindow((int)Window.size.X, (int)Window.size.Y, "Electronic");
-            Raylib.SetWindowState(ConfigFlags.ResizableWindow | ConfigFlags.Msaa4xHint);
+            RayGui.GuiLoadStyleDefault();
+            Raylib.SetWindowState(ConfigFlags.FLAG_WINDOW_RESIZABLE | ConfigFlags.FLAG_MSAA_4X_HINT);
 
             Raylib.SetTargetFPS(10000);
             
             Init();
             
-            Saving.Load(DateTime.Now.ToLongDateString() + ".circuit");
+            //Saving.Load("16BitAdder.circuit");
             
             while (!Raylib.WindowShouldClose())
             {
@@ -36,14 +37,15 @@ namespace RaylibElectronic
             zoom = 1.0f;
             center = new Vector2(Window.size.X / 2f, Window.size.X / 2f);
             Global.camera = new();
-            Global.camera.Target = new Vector2(Window.size.X / 2f, Window.size.X / 2f);
-            Global.camera.Offset = new Vector2(Window.size.X / 2f, Window.size.X / 2f);
-            Global.camera.Rotation = 0.0f;
-            Global.camera.Zoom = zoom;
+            Global.camera.target = new Vector2(Window.size.X / 2f, Window.size.X / 2f);
+            Global.camera.offset = new Vector2(Window.size.X / 2f, Window.size.X / 2f);
+            Global.camera.rotation = 0.0f;
+            Global.camera.zoom = zoom;
             
             Mouse.Init();
             
             ElectronicSim.Init();
+            ComponentEditor.Init();
         }
 
         public static void Update()
@@ -51,12 +53,13 @@ namespace RaylibElectronic
             Global.Update();
             Mouse.Update();
             
+            ComponentEditor.Update();
             InputInteraction.Update();
 
             //ui control
             if (!InputInteraction.wantControl)
             {
-                if (Raylib.IsMouseButtonDown(MouseButton.Middle))
+                if (Raylib.IsMouseButtonDown(MouseButton.MOUSE_BUTTON_MIDDLE))
                 {
                     center -= Raylib.GetMouseDelta() / zoom;
                 }
@@ -64,19 +67,19 @@ namespace RaylibElectronic
                 zoom += Raylib.GetMouseWheelMove() / 10f;
             }
 
-            if (Raylib.IsKeyPressed(KeyboardKey.S))
+            if (Raylib.IsKeyPressed(KeyboardKey.KEY_S))
             {
                 Saving.Save();
             }
             
-            if (Raylib.IsKeyPressed(KeyboardKey.R))
+            if (Raylib.IsKeyPressed(KeyboardKey.KEY_R))
             {
                 ElectronicSim.Clear();
             }
             
             zoom = MathF.Abs(zoom);
-            Global.camera.Target = center;
-            Global.camera.Zoom = zoom;
+            Global.camera.target = center;
+            Global.camera.zoom = zoom;
             
             totalTimeUpdate += Raylib.GetFrameTime();
             while (totalTimeUpdate >= Global.fixedDelta)
@@ -95,13 +98,15 @@ namespace RaylibElectronic
         public static void Render()
         {
             Raylib.BeginDrawing();
-            Raylib.ClearBackground(Color.Gray);
+            Raylib.ClearBackground(Global.Gray);
             Raylib.BeginMode2D(Global.camera);
             
             ElectronicSim.Render();
             InputInteraction.Render();
             
             Raylib.EndMode2D();
+            
+            ComponentEditor.Render();
             
             Raylib.EndDrawing();
         }

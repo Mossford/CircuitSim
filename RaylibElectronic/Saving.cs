@@ -49,6 +49,12 @@ namespace RaylibElectronic
                 {
                     writer.Write(((Button)comp).state);
                 }
+                if (comp.type == ComponentTypes.Led)
+                {
+                    writer.Write(((Led)comp).color.r);
+                    writer.Write(((Led)comp).color.g);
+                    writer.Write(((Led)comp).color.b);
+                }
             }
             
             File.WriteAllBytes(SavePath + file, stream.ToArray());
@@ -98,6 +104,7 @@ namespace RaylibElectronic
                     ComponentTypes.Testing => new Testing(position),
                     ComponentTypes.Clock => new Clock(position),
                     ComponentTypes.Scope => new Scope(position),
+                    ComponentTypes.Neuron => new Neuron(position),
                     _ => new Button(position)
                 };
 
@@ -127,8 +134,15 @@ namespace RaylibElectronic
                 {
                     ((Button)component).state = reader.ReadBoolean();
                 }
+                if (component.type == ComponentTypes.Button)
+                {
+                    ((Led)component).color.r = reader.ReadByte();
+                    ((Led)component).color.g = reader.ReadByte();
+                    ((Led)component).color.b = reader.ReadByte();
+                }
                 
                 ElectronicSim.components.Add(component);
+                ElectronicSim.components[^1].Init();
             }
             
             reader.Close();

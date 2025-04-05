@@ -1,10 +1,11 @@
 using System.Numerics;
-using Raylib_cs;
+using ZeroElectric.Vinculum;
 
 namespace RaylibElectronic
 {
     public static class Mouse
     {
+        public static Vector2 screenPosition;
         public static Vector2 position;
         public static Vector2 localPosition;
         public static Vector2 lastPosition;
@@ -20,7 +21,8 @@ namespace RaylibElectronic
         {
             lastPosition = position;
             lastLocalPosition = ((lastPosition * 2) - Window.size) / 2;
-            position = Raylib.GetScreenToWorld2D(Raylib.GetMousePosition(), Global.camera);
+            screenPosition = Raylib.GetMousePosition();
+            position = Raylib.GetScreenToWorld2D(screenPosition, Global.camera);
             localPosition = ((position * 2) - Window.size) / 2;
         }
     }

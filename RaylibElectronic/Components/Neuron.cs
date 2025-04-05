@@ -2,17 +2,14 @@ using System.Numerics;
 
 namespace RaylibElectronic
 {
-    public class Clock : Component
+    public class Neuron : Component
     {
-        public float frequency;
-        public float dutyCycle;
-        float pastTime;
-        public static int inputCountSub = 0;
-        public static int outputCountSub = 1;
-        
-        public Clock(Vector2 position)
+        public int inputCountSub = 1;
+        public int outputCountSub = 1;
+
+        public Neuron(Vector2 position)
         {
-            type = ComponentTypes.Clock;
+            type = ComponentTypes.Neuron;
             inputCount = inputCountSub;
             outputCount = outputCountSub;
             this.id = ElectronicSim.components.Count;
@@ -23,12 +20,8 @@ namespace RaylibElectronic
             outputConnectionsOther = new Dictionary<int, int>();
             outputs = new List<bool>(outputCount);
             this.position = position;
-
-            frequency = 10f;
-            dutyCycle = 1f;
         }
-        
-        
+
         public override void Init()
         {
             PreCalculate();
@@ -36,20 +29,15 @@ namespace RaylibElectronic
 
         public override void Update()
         {
-            //once the frequency goes above 1/60 then we will not have a consistent rate
-            pastTime += Global.fixedDelta;
-            if (pastTime >= dutyCycle / frequency)
-            {
-                outputs[0] = !outputs[0];
-                pastTime = 0f;
-            }
-            currentInputCount = 0;
+            currentInputCount = inputConnections.Count;
             currentOutputCount = outputConnections.Count;
+            inputCountSub = currentInputCount;
+            outputCountSub = currentOutputCount;
         }
 
         public override void CustomRender()
         {
-            
+
         }
     }
 }

@@ -1,5 +1,5 @@
 using System.Numerics;
-using Raylib_cs;
+using ZeroElectric.Vinculum;
 
 namespace RaylibElectronic
 {
@@ -7,6 +7,7 @@ namespace RaylibElectronic
     {
         public static int inputCountSub = 1;
         public static int outputCountSub = 0;
+        public Color color;
         
         public Led(Vector2 position)
         {
@@ -21,6 +22,8 @@ namespace RaylibElectronic
             outputConnectionsOther = new Dictionary<int, int>();
             outputs = new List<bool>(outputCount);
             this.position = position;
+            
+            color = Global.Blue;
         }
         
         public override void Init()
@@ -38,11 +41,11 @@ namespace RaylibElectronic
         {
             if (inputConnections.Count > 0 && GetOutputFromOther(0))
             {
-                Raylib.DrawCircleV(new Vector2(position.X + width, position.Y + (height / 2f)), radius * size, Color.Blue);
+                Raylib.DrawCircleV(new Vector2(position.X + width, position.Y + (height / 2f)), (radius - 1) * size, color);
             }
             else
             {
-                Raylib.DrawCircleV(new Vector2(position.X + width, position.Y + (height / 2f)), radius * size, Color.DarkGray);
+                Raylib.DrawCircleV(new Vector2(position.X + width, position.Y + (height / 2f)), (radius - 1) * size, Global.DarkGray);
             }
         }
     }

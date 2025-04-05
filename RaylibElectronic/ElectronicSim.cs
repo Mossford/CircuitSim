@@ -17,6 +17,7 @@ namespace RaylibElectronic
         Testing = 9,
         Clock = 10,
         Scope = 11,
+        Neuron = 12,
         empty,
     }
 
@@ -74,6 +75,7 @@ namespace RaylibElectronic
                     ComponentTypes.Testing => new Testing(position),
                     ComponentTypes.Clock => new Clock(position),
                     ComponentTypes.Scope => new Scope(position),
+                    ComponentTypes.Neuron => new Neuron(position),
                     _ => new Button(position)
                 };
 
@@ -98,6 +100,7 @@ namespace RaylibElectronic
                     ComponentTypes.Testing => new Testing(position),
                     ComponentTypes.Clock => new Clock(position),
                     ComponentTypes.Scope => new Scope(position),
+                    ComponentTypes.Neuron => new Neuron(position),
                     _ => new Button(position)
                 };
             

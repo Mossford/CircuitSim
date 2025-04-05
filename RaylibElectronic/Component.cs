@@ -1,7 +1,5 @@
-
-
 using System.Numerics;
-using Raylib_cs;
+using ZeroElectric.Vinculum;
 
 namespace RaylibElectronic
 {
@@ -29,6 +27,8 @@ namespace RaylibElectronic
         public bool highLight;
         public ComponentTypes type;
 
+        bool enableDefaultRender;
+
         public virtual void Init()
         {
             
@@ -47,6 +47,8 @@ namespace RaylibElectronic
 
         public void PreCalculate()
         {
+            enableDefaultRender = true;
+            
             for (int i = 0; i < outputCount; i++)
             {
                 outputs.Add(false);
@@ -103,48 +105,54 @@ namespace RaylibElectronic
         public void Render()
         {
             UpdatePositions();
-            
-            //draw body
-            Raylib.DrawRectangle((int)position.X, (int)position.Y, width, height, Color.Black);
-            
-            //draw inputs
-            for (int i = 0; i < inputCount; i++)
+
+            if (enableDefaultRender)
             {
-                int y = ((i + 1) * (radius + padding)) + (i * radius);
-                Raylib.DrawCircle((int)position.X, (int)position.Y + y, radius, Color.Gold);
-            }
-            
-            //draw output
-            if (outputCount > 0)
-            {
-                for (int i = 0; i < outputCount; i++)
+
+                //draw body
+                Raylib.DrawRectangle((int)position.X, (int)position.Y, width, height, Global.Black);
+
+                //draw inputs
+                for (int i = 0; i < inputCount; i++)
                 {
                     int y = ((i + 1) * (radius + padding)) + (i * radius);
-                    if(outputs[i])
-                        Raylib.DrawCircle((int)position.X + width, (int)position.Y + y, radius, Color.Green);
-                    else
-                        Raylib.DrawCircle((int)position.X + width, (int)position.Y + y, radius, Color.Red);
+                    Raylib.DrawCircle((int)position.X, (int)position.Y + y, radius, Global.Gold);
                 }
+
+                //draw output
+                if (outputCount > 0)
+                {
+                    for (int i = 0; i < outputCount; i++)
+                    {
+                        int y = ((i + 1) * (radius + padding)) + (i * radius);
+                        if (outputs[i])
+                            Raylib.DrawCircle((int)position.X + width, (int)position.Y + y, radius, Global.Green);
+                        else
+                            Raylib.DrawCircle((int)position.X + width, (int)position.Y + y, radius, Global.Red);
+                    }
+                }
+
+                //draw connecting lines
+                for (int i = 0; i < inputConnections.Count; i++)
+                {
+                    Vector2 inputPos = inputPositions[i];
+                    Vector2 otherOutPos = ElectronicSim.components[inputConnections[i]]
+                        .outputPositions[outputConnectionsOther[inputConnections[i]]];
+
+                    if (ElectronicSim.components[inputConnections[i]]
+                        .outputs[outputConnectionsOther[inputConnections[i]]])
+                        Raylib.DrawLineV(inputPos, otherOutPos, Global.Green);
+                    else
+                        Raylib.DrawLineV(inputPos, otherOutPos, Global.Red);
+                }
+                
+                Raylib.DrawText(type.ToString(), (int)position.X + ((width - Raylib.MeasureText(type.ToString(), 15)) / 2), (int)position.Y + ((height - 15) / 2), 15, Global.White);
             }
 
-            //draw connecting lines
-            for (int i = 0; i < inputConnections.Count; i++)
-            {
-                Vector2 inputPos = inputPositions[i];
-                Vector2 otherOutPos = ElectronicSim.components[inputConnections[i]].outputPositions[outputConnectionsOther[inputConnections[i]]];
-                
-                if(ElectronicSim.components[inputConnections[i]].outputs[outputConnectionsOther[inputConnections[i]]])
-                    Raylib.DrawLineV(inputPos, otherOutPos, Color.Green);
-                else
-                    Raylib.DrawLineV(inputPos, otherOutPos, Color.Red);
-            }
-            
             if (highLight)
             {
                 HighLight();
             }
-            
-            Raylib.DrawText(type.ToString(), (int)position.X + ((width - Raylib.MeasureText(type.ToString(), 15)) / 2), (int)position.Y + ((height - 15) / 2), 15, Color.White);
             
             CustomRender();
             
@@ -152,7 +160,7 @@ namespace RaylibElectronic
 
         public void HighLight()
         {
-            Raylib.DrawRectangleLines((int)position.X - Global.posAnimate, (int)position.Y - Global.posAnimate, width + Global.sizeAnimate, height + Global.sizeAnimate, Color.Yellow);
+            Raylib.DrawRectangleLines((int)position.X - Global.posAnimate, (int)position.Y - Global.posAnimate, width + Global.sizeAnimate, height + Global.sizeAnimate, Global.Yellow);
         }
 
         public void Copy(in Component other)
