@@ -30,23 +30,7 @@ namespace RaylibElectronic
                 ComponentTypes type = (ComponentTypes)reader.ReadInt32();
                 Vector2 position = Vector2.Zero;
 
-                Component component = type switch
-                {
-                    ComponentTypes.Button => new Button(position),
-                    ComponentTypes.AndGate => new AndGate(position),
-                    ComponentTypes.NotGate => new NotGate(position),
-                    ComponentTypes.NandGate => new NandGate(position),
-                    ComponentTypes.OrGate => new OrGate(position),
-                    ComponentTypes.NorGate => new OrGate(position),
-                    ComponentTypes.XorGate => new XorGate(position),
-                    ComponentTypes.Led => new Led(position),
-                    ComponentTypes.Cross => new Cross(position),
-                    ComponentTypes.Splitter => new Splitter(position),
-                    ComponentTypes.Clock => new Clock(position),
-                    ComponentTypes.Scope => new Scope(position),
-                    ComponentTypes.Display => new Display(position),
-                    _ => new Button(position)
-                };
+                Component component = ElectronicSim.GetComponentOnType(type, position);
 
                 component.id = reader.ReadInt32();
                 component.inputConnections = Saving.ReadArray<int>(reader, data).ToList();

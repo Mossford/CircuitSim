@@ -79,6 +79,9 @@ namespace RaylibElectronic
                     case ComponentTypes.Scope:
                         HandleScopeEditor();
                         break;
+                    case ComponentTypes.Label:
+                        HandleLabelEditor();
+                        break;
                 }
             }
         }
@@ -86,7 +89,7 @@ namespace RaylibElectronic
         public static bool IsEditableComponent(int component)
         {
             ComponentTypes type = ElectronicSim.components[component].type;
-            return type == ComponentTypes.Led || type == ComponentTypes.Clock || type == ComponentTypes.Scope;
+            return type is ComponentTypes.Led or ComponentTypes.Clock || type == ComponentTypes.Scope || type == ComponentTypes.Label;
         }
 
 
@@ -153,6 +156,16 @@ namespace RaylibElectronic
             {
                 ((Scope)ElectronicSim.components[currentComponent]).state = !((Scope)ElectronicSim.components[currentComponent]).state;
             }
+        }
+
+        static void HandleLabelEditor()
+        {
+            int horizontalPad = 10;
+            int verticalPad = 20;
+            Rectangle window = new Rectangle(position.X, position.Y, size.X, size.Y);
+
+            string text = "";
+            RayGui.GuiTextInputBox(new Rectangle((window.X + (horizontalPad * 3f)), window.Y + (verticalPad * 4), window.width - (horizontalPad * 7f), 130), "Label Text", "", "Apply", text, 255);
         }
         
     }
