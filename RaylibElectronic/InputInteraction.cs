@@ -34,7 +34,12 @@ namespace RaylibElectronic
                 //delete a wire if we want to
                 if (Raylib.IsMouseButtonPressed(MouseButton.MOUSE_BUTTON_RIGHT) && !Mouse.uiWantMouse)
                 {
-                    currentWireCount -= 1 + ElectronicSim.components[currentSelectedSpawnComponent].currentOutputCount + ElectronicSim.components[currentSelectedSpawnComponent].currentInputCount;
+                    if (Raylib.IsKeyDown(KeyboardKey.KEY_LEFT_ALT))
+                    {
+                        currentWireCount = 0;
+                    }
+                    else
+                        currentWireCount -= 1;
                 }
             }
             
@@ -326,6 +331,12 @@ namespace RaylibElectronic
                         outputCount = OrGate.outputCountSub;
                         break;
                     }
+                    case ComponentTypes.NorGate:
+                    {
+                        inputCount = NorGate.inputCountSub;
+                        outputCount = NorGate.outputCountSub;
+                        break;
+                    }
                     case ComponentTypes.XorGate:
                     {
                         inputCount = XorGate.inputCountSub;
@@ -350,12 +361,6 @@ namespace RaylibElectronic
                         outputCount = Splitter.outputCountSub;
                         break;
                     }
-                    case ComponentTypes.Testing:
-                    {
-                        inputCount = Testing.inputCountSub;
-                        outputCount = Testing.outputCountSub;
-                        break;
-                    }
                     case ComponentTypes.Clock:
                     {
                         inputCount = Clock.inputCountSub;
@@ -366,6 +371,12 @@ namespace RaylibElectronic
                     {
                         inputCount = Scope.inputCountSub;
                         outputCount = Scope.outputCountSub;
+                        break;
+                    }
+                    case ComponentTypes.Display:
+                    {
+                        inputCount = Display.inputCountSub;
+                        outputCount = Display.outputCountSub;
                         break;
                     }
                 }
@@ -386,10 +397,12 @@ namespace RaylibElectronic
                 {
                     int inputCount = ElectronicSim.components[currentSelectedSpawnComponent].inputCount;
                     int outputCount = ElectronicSim.components[currentSelectedSpawnComponent].outputCount;
+                    //draw from inputs
                     if (currentWireCount > outputCount)
                     {
                         Raylib.DrawLineV(ElectronicSim.components[currentSelectedSpawnComponent].inputPositions[(inputCount + outputCount) - currentWireCount], Mouse.position, Global.Red);
                     }
+                    //draw from outputs
                     else
                     {
                         Raylib.DrawLineV(ElectronicSim.components[currentSelectedSpawnComponent].outputPositions[outputCount - currentWireCount], Mouse.position, Global.Red);
@@ -434,16 +447,24 @@ namespace RaylibElectronic
         {
             ComponentTypes type = ElectronicSim.components[index].type;
             
+            //
+            //Probably the most changed section as this part is so fucked
+            //
+            
             //check if we have a wire
             if (currentWireCount > 0)
             {
-                //do the input connects
+                //try to connect a input wire to indexes output
                 if (currentWireCount > ElectronicSim.components[currentSelectedSpawnComponent].outputCount)
                 {
+                    //check if it has an available output
                     if (ElectronicSim.components[index].currentOutputCount < ElectronicSim.components[index].outputCount)
                     {
+                        //try adding the index component to the current output connection map
                         ElectronicSim.components[currentSelectedSpawnComponent].outputConnectionsOther.TryAdd(index, ElectronicSim.components[index].outputConnections.Count);
+                        //add the current component to indexes output list
                         ElectronicSim.components[index].outputConnections.Add(currentSelectedSpawnComponent);
+                        //add indexes to the current components input list
                         ElectronicSim.components[currentSelectedSpawnComponent].inputConnections.Add(index);
                         
                         currentWireCount--;
@@ -457,6 +478,7 @@ namespace RaylibElectronic
                         ElectronicSim.components[index].outputConnectionsOther.TryAdd(currentSelectedSpawnComponent, ElectronicSim.components[currentSelectedSpawnComponent].outputConnections.Count);
                         ElectronicSim.components[currentSelectedSpawnComponent].outputConnections.Add(index);
                         ElectronicSim.components[index].inputConnections.Add(currentSelectedSpawnComponent);
+                        
                         currentWireCount--;
                     }
                 }
@@ -467,7 +489,7 @@ namespace RaylibElectronic
             if (ElectronicSim.components[index].currentInputCount < ElectronicSim.components[index].inputCount || ElectronicSim.components[index].currentOutputCount < ElectronicSim.components[index].outputCount)
             {
                 currentSelectedSpawnComponent = index;
-                currentWireCount = (ElectronicSim.components[index].inputCount - ElectronicSim.components[index].currentInputCount) + (ElectronicSim.components[index].outputCount- ElectronicSim.components[index].currentOutputCount);
+                currentWireCount = (ElectronicSim.components[index].inputCount - ElectronicSim.components[index].currentInputCount) + (ElectronicSim.components[index].outputCount - ElectronicSim.components[index].currentOutputCount);
                 return;
             }
             

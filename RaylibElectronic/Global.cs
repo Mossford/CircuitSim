@@ -4,6 +4,7 @@ namespace RaylibElectronic
 {
     public static class Global
     {
+        public static String version = "0.1";
         public static Camera2D camera;
         public static float sinTime;
         public static int posAnimate;

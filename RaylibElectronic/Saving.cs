@@ -20,6 +20,7 @@ namespace RaylibElectronic
             MemoryStream stream = new MemoryStream();
             BinaryWriter writer = new BinaryWriter(stream);
 
+            writer.Write(Global.version);
             writer.Write(ElectronicSim.components.Count);
             foreach (Component comp in ElectronicSim.components)
             {
@@ -49,11 +50,21 @@ namespace RaylibElectronic
                 {
                     writer.Write(((Button)comp).state);
                 }
-                if (comp.type == ComponentTypes.Led)
+                else if (comp.type == ComponentTypes.Led)
                 {
                     writer.Write(((Led)comp).color.r);
                     writer.Write(((Led)comp).color.g);
                     writer.Write(((Led)comp).color.b);
+                }
+                else if (comp.type == ComponentTypes.Clock)
+                {
+                    writer.Write(((Clock)comp).frequency);
+                    writer.Write(((Clock)comp).dutyCycle);
+                }
+                else if (comp.type == ComponentTypes.Scope)
+                {
+                    writer.Write(((Scope)comp).horizontalDiv);
+                    writer.Write(((Scope)comp).horizontalLen);
                 }
             }
             
@@ -78,75 +89,16 @@ namespace RaylibElectronic
             MemoryStream stream = new MemoryStream(data);
             BinaryReader reader = new BinaryReader(stream);
 
-            int compCount = reader.ReadInt32();
-
-            ElectronicSim.Clear();
-            ElectronicSim.components = new List<Component>(compCount);
-            
-            for (int i = 0; i < compCount; i++)
-            {
-                Component component;
-
-                ComponentTypes type = (ComponentTypes)reader.ReadInt32();
-                Vector2 position = Vector2.Zero;
-
-                component = type switch
-                {
-                    ComponentTypes.Button => new Button(position),
-                    ComponentTypes.AndGate => new AndGate(position),
-                    ComponentTypes.NotGate => new NotGate(position),
-                    ComponentTypes.NandGate => new NandGate(position),
-                    ComponentTypes.OrGate => new OrGate(position),
-                    ComponentTypes.XorGate => new XorGate(position),
-                    ComponentTypes.Led => new Led(position),
-                    ComponentTypes.Cross => new Cross(position),
-                    ComponentTypes.Splitter => new Splitter(position),
-                    ComponentTypes.Testing => new Testing(position),
-                    ComponentTypes.Clock => new Clock(position),
-                    ComponentTypes.Scope => new Scope(position),
-                    ComponentTypes.Neuron => new Neuron(position),
-                    _ => new Button(position)
-                };
-
-                component.id = reader.ReadInt32();
-                component.inputConnections = ReadArray<int>(reader, data).ToList();
-                component.inputPositions = ReadArray<Vector2>(reader, data).ToList();
-                component.outputConnections = ReadArray<int>(reader, data).ToList();
-                component.outputPositions = ReadArray<Vector2>(reader, data).ToList();
-                component.outputs = ReadArray<bool>(reader, data).ToList();
-                int outConOther = reader.ReadInt32();
-                component.outputConnectionsOther = new Dictionary<int, int>(outConOther);
-                for (int j = 0; j < outConOther; j++)
-                {
-                    component.outputConnectionsOther.Add(reader.ReadInt32(), reader.ReadInt32());
-                }
-
-                component.position.X = reader.ReadSingle();
-                component.position.Y = reader.ReadSingle();
-                component.width = reader.ReadInt32();
-                component.height = reader.ReadInt32();
-                component.inputCount = reader.ReadInt32();
-                component.outputCount = reader.ReadInt32();
-                component.currentInputCount = reader.ReadInt32();
-                component.currentOutputCount = reader.ReadInt32();
-                component.highLight = reader.ReadBoolean();
-                if (component.type == ComponentTypes.Button)
-                {
-                    ((Button)component).state = reader.ReadBoolean();
-                }
-                if (component.type == ComponentTypes.Button)
-                {
-                    ((Led)component).color.r = reader.ReadByte();
-                    ((Led)component).color.g = reader.ReadByte();
-                    ((Led)component).color.b = reader.ReadByte();
-                }
-                
-                ElectronicSim.components.Add(component);
-                ElectronicSim.components[^1].Init();
-            }
-            
+            string version = reader.ReadString();
             reader.Close();
             stream.Close();
+
+            switch (version)
+            {
+                case "0.1":
+                    SavingVersions.Read01(data);
+                    break;
+            }
 
         }
 

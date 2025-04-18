@@ -17,6 +17,7 @@ namespace RaylibElectronic
         public Vector2 position;
         public int width;
         public int height;
+        //do not change from 2
         public const int size = 2;
         public const int radius = 3 * size;
         public const int padding = radius;
@@ -27,7 +28,7 @@ namespace RaylibElectronic
         public bool highLight;
         public ComponentTypes type;
 
-        bool enableDefaultRender;
+        protected bool disableDefaultRender;
 
         public virtual void Init()
         {
@@ -47,8 +48,6 @@ namespace RaylibElectronic
 
         public void PreCalculate()
         {
-            enableDefaultRender = true;
-            
             for (int i = 0; i < outputCount; i++)
             {
                 outputs.Add(false);
@@ -106,7 +105,7 @@ namespace RaylibElectronic
         {
             UpdatePositions();
 
-            if (enableDefaultRender)
+            if (!disableDefaultRender)
             {
 
                 //draw body
@@ -131,22 +130,22 @@ namespace RaylibElectronic
                             Raylib.DrawCircle((int)position.X + width, (int)position.Y + y, radius, Global.Red);
                     }
                 }
-
-                //draw connecting lines
-                for (int i = 0; i < inputConnections.Count; i++)
-                {
-                    Vector2 inputPos = inputPositions[i];
-                    Vector2 otherOutPos = ElectronicSim.components[inputConnections[i]]
-                        .outputPositions[outputConnectionsOther[inputConnections[i]]];
-
-                    if (ElectronicSim.components[inputConnections[i]]
-                        .outputs[outputConnectionsOther[inputConnections[i]]])
-                        Raylib.DrawLineV(inputPos, otherOutPos, Global.Green);
-                    else
-                        Raylib.DrawLineV(inputPos, otherOutPos, Global.Red);
-                }
                 
                 Raylib.DrawText(type.ToString(), (int)position.X + ((width - Raylib.MeasureText(type.ToString(), 15)) / 2), (int)position.Y + ((height - 15) / 2), 15, Global.White);
+            }
+            
+            //draw connecting lines
+            for (int i = 0; i < inputConnections.Count; i++)
+            {
+                Vector2 inputPos = inputPositions[i];
+                Vector2 otherOutPos = ElectronicSim.components[inputConnections[i]]
+                    .outputPositions[outputConnectionsOther[inputConnections[i]]];
+
+                if (ElectronicSim.components[inputConnections[i]]
+                    .outputs[outputConnectionsOther[inputConnections[i]]])
+                    Raylib.DrawLineV(inputPos, otherOutPos, Global.Green);
+                else
+                    Raylib.DrawLineV(inputPos, otherOutPos, Global.Red);
             }
 
             if (highLight)

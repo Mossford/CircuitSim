@@ -11,6 +11,10 @@
       <PackageReference Include="Raylib-CSharp-Vinculum" Version="5.0.1" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Circuits\" />
+    </ItemGroup>
+
     <Target Name="PostBuild" AfterTargets="PostBuildEvent">
         <MakeDir Directories="$(TargetDir)Circuits" />
         <ItemGroup>

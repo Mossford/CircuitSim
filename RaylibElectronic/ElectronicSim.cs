@@ -1,23 +1,24 @@
 using System.Numerics;
+using ZeroElectric.Vinculum;
 
 namespace RaylibElectronic
 {
 
     public enum ComponentTypes
     {
-        Button = 0,
-        AndGate = 1,
-        NotGate = 2,
-        NandGate = 3,
-        OrGate = 4,
-        XorGate = 5,
-        Led = 6,
-        Cross = 7,
-        Splitter = 8,
-        Testing = 9,
-        Clock = 10,
-        Scope = 11,
-        Neuron = 12,
+        Button,
+        AndGate,
+        NotGate,
+        NandGate,
+        OrGate,
+        NorGate,
+        XorGate,
+        Led,
+        Cross,
+        Splitter,
+        Clock,
+        Scope,
+        Display,
         empty,
     }
 
@@ -51,8 +52,17 @@ namespace RaylibElectronic
         {
             for (int i = 0; i < components.Count; i++)
             {
-                if(components[i].id != -1)
+                if (components[i].id != -1)
+                {
+                    Vector2 screenPos = Raylib.GetWorldToScreen2D(components[i].position, Global.camera);
+                    bool outSideBoundLeft = ((screenPos.X < 0 && screenPos.X + components[i].width < 0) || 
+                                             (screenPos.Y < 0 && screenPos.Y + components[i].height < 0));
+                    bool outSideBoundRight = ((screenPos.X > Window.size.X && screenPos.X + components[i].width > Window.size.X) || 
+                                            (screenPos.Y > Window.size.Y && screenPos.Y + components[i].height > Window.size.Y));
+                    if(outSideBoundLeft || outSideBoundRight)
+                        continue;
                     components[i].Render();
+                }
             }
         }
 
@@ -68,14 +78,14 @@ namespace RaylibElectronic
                     ComponentTypes.NotGate => new NotGate(position),
                     ComponentTypes.NandGate => new NandGate(position),
                     ComponentTypes.OrGate => new OrGate(position),
+                    ComponentTypes.NorGate => new OrGate(position),
                     ComponentTypes.XorGate => new XorGate(position),
                     ComponentTypes.Led => new Led(position),
                     ComponentTypes.Cross => new Cross(position),
                     ComponentTypes.Splitter => new Splitter(position),
-                    ComponentTypes.Testing => new Testing(position),
                     ComponentTypes.Clock => new Clock(position),
                     ComponentTypes.Scope => new Scope(position),
-                    ComponentTypes.Neuron => new Neuron(position),
+                    ComponentTypes.Display => new Display(position),
                     _ => new Button(position)
                 };
 
@@ -93,14 +103,14 @@ namespace RaylibElectronic
                     ComponentTypes.NotGate => new NotGate(position),
                     ComponentTypes.NandGate => new NandGate(position),
                     ComponentTypes.OrGate => new OrGate(position),
+                    ComponentTypes.NorGate => new OrGate(position),
                     ComponentTypes.XorGate => new XorGate(position),
                     ComponentTypes.Led => new Led(position),
                     ComponentTypes.Cross => new Cross(position),
                     ComponentTypes.Splitter => new Splitter(position),
-                    ComponentTypes.Testing => new Testing(position),
                     ComponentTypes.Clock => new Clock(position),
                     ComponentTypes.Scope => new Scope(position),
-                    ComponentTypes.Neuron => new Neuron(position),
+                    ComponentTypes.Display => new Display(position),
                     _ => new Button(position)
                 };
             

@@ -2,14 +2,14 @@ using System.Numerics;
 
 namespace RaylibElectronic
 {
-    public class Neuron : Component
+    public class NorGate : Component
     {
-        public int inputCountSub = 1;
-        public int outputCountSub = 1;
-
-        public Neuron(Vector2 position)
+        public static int inputCountSub = 2;
+        public static int outputCountSub = 1;
+        
+        public NorGate(Vector2 position)
         {
-            type = ComponentTypes.Neuron;
+            type = ComponentTypes.NorGate;
             inputCount = inputCountSub;
             outputCount = outputCountSub;
             this.id = ElectronicSim.components.Count;
@@ -21,7 +21,7 @@ namespace RaylibElectronic
             outputs = new List<bool>(outputCount);
             this.position = position;
         }
-
+        
         public override void Init()
         {
             PreCalculate();
@@ -31,13 +31,16 @@ namespace RaylibElectronic
         {
             currentInputCount = inputConnections.Count;
             currentOutputCount = outputConnections.Count;
-            inputCountSub = currentInputCount;
-            outputCountSub = currentOutputCount;
+            
+            if(inputConnections.Count < 2)
+                return;
+
+            outputs[0] = !(GetOutputFromOther(0) || GetOutputFromOther(1));
         }
 
         public override void CustomRender()
         {
-
+            
         }
     }
 }

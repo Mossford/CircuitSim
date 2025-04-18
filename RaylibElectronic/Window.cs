@@ -4,6 +4,6 @@ namespace RaylibElectronic
 {
     public static class Window
     {
-        public static readonly Vector2 size = new Vector2(1280, 720);
+        public static Vector2 size = new Vector2(1280, 720);
     }
 }

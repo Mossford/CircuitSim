@@ -21,7 +21,7 @@ namespace RaylibElectronic
             
             Init();
             
-            //Saving.Load("16BitAdder.circuit");
+            Saving.Load(DateTime.Now.ToLongDateString() + ".circuit");
             
             while (!Raylib.WindowShouldClose())
             {
@@ -50,6 +50,9 @@ namespace RaylibElectronic
 
         public static void Update()
         {
+
+            Window.size = new Vector2(Raylib.GetScreenWidth(), Raylib.GetScreenHeight());
+            
             Global.Update();
             Mouse.Update();
             
@@ -64,8 +67,11 @@ namespace RaylibElectronic
                     center -= Raylib.GetMouseDelta() / zoom;
                 }
 
-                zoom += Raylib.GetMouseWheelMove() / 10f;
+                zoom += Raylib.GetMouseWheelMove() / 50f;
             }
+
+            if (zoom < 0.01f)
+                zoom = 0.01f;
 
             if (Raylib.IsKeyPressed(KeyboardKey.KEY_S))
             {
