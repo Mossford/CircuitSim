@@ -22,6 +22,7 @@ namespace RaylibElectronic
             outputConnectionsOther = new Dictionary<int, int>();
             outputs = new List<bool>(outputCount);
             this.position = position;
+            text = "";
         }
         
         public override void Init()
@@ -39,7 +40,14 @@ namespace RaylibElectronic
         public override void CustomRender()
         {
             width = Raylib.MeasureText(text, 15) + (padding * size * 2);
-            height = 15 + (padding * size * 2);
+            //get the number of new lines
+            int numNewLine = 1;
+            for (int i = 0; i < text.Length; i++)
+            {
+                if (text[i] == '\n')
+                    numNewLine++;
+            }
+            height = (15 * numNewLine) + (padding * size * 2);
             
             Raylib.DrawRectangleV(position, new Vector2(width, height), Global.Black);
             Raylib.DrawText(text, position.X + (padding * size), position.Y + (padding * size), 15, Global.White);

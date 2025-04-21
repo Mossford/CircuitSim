@@ -5,19 +5,34 @@ namespace RaylibElectronic
 {
     public static class InputInteraction
     {
-        static int currentSelectedSpawnComponent = -1;
-        static OrderedDictionary<int, int> currentSelectedComponents = new OrderedDictionary<int, int>();
-        static List<int> clipboard = new List<int>();
+        static int currentSelectedSpawnComponent;
+        static OrderedDictionary<int, int> currentSelectedComponents;
+        static List<int> clipboard;
         static Vector2 clipboardMax;
         static Vector2 clipboardMin;
-        static int currentSpawnComponent = 0;
-        static int currentWireCount = 0;
+        static int currentSpawnComponent;
+        static int currentWireCount;
         static bool renderSpawnText;
         static bool renderWireLine;
         static bool renderClipboardBounds;
         static bool renderPasteBounds;
         public static bool wantControl;
-        
+
+        public static void Init()
+        {
+            currentSelectedSpawnComponent = -1;
+            currentSelectedComponents = new OrderedDictionary<int, int>();
+            clipboard = new List<int>();
+            clipboardMax = default;
+            clipboardMin = default;
+            currentSpawnComponent = 0;
+            currentWireCount = 0;
+            renderSpawnText = false;
+            renderWireLine = false;
+            renderClipboardBounds = false;
+            renderPasteBounds = false;
+            wantControl = false;
+        }
         
         public static void Update()
         {
@@ -34,7 +49,7 @@ namespace RaylibElectronic
                 //delete a wire if we want to
                 if (Raylib.IsMouseButtonPressed(MouseButton.MOUSE_BUTTON_RIGHT) && !Mouse.uiWantMouse)
                 {
-                    if (Raylib.IsKeyDown(KeyboardKey.KEY_LEFT_ALT))
+                    if (Raylib.IsKeyDown(KeyboardKey.KEY_LEFT_ALT) && !Keyboard.uiWantKeyboard)
                     {
                         currentWireCount = 0;
                     }
@@ -43,7 +58,7 @@ namespace RaylibElectronic
                 }
             }
             
-            if (Raylib.IsKeyDown(KeyboardKey.KEY_LEFT_CONTROL) && !Raylib.IsKeyDown(KeyboardKey.KEY_LEFT_SHIFT))
+            if (Raylib.IsKeyDown(KeyboardKey.KEY_LEFT_CONTROL) && !Raylib.IsKeyDown(KeyboardKey.KEY_LEFT_SHIFT) && !Keyboard.uiWantKeyboard)
             {
                 for (int i = 0; i < ElectronicSim.components.Count; i++)
                 {
@@ -150,7 +165,7 @@ namespace RaylibElectronic
                     }
                 }
             }
-            else if (Raylib.IsKeyDown(KeyboardKey.KEY_LEFT_SHIFT) && !Raylib.IsKeyDown(KeyboardKey.KEY_LEFT_CONTROL))
+            else if (Raylib.IsKeyDown(KeyboardKey.KEY_LEFT_SHIFT) && !Raylib.IsKeyDown(KeyboardKey.KEY_LEFT_CONTROL) && !Keyboard.uiWantKeyboard)
             {
                 for (int i = 0; i < ElectronicSim.components.Count; i++)
                 {
@@ -257,7 +272,7 @@ namespace RaylibElectronic
                 }
                 
                 //clear clipboard
-                if (Raylib.IsKeyPressed(KeyboardKey.KEY_C))
+                if (Raylib.IsKeyPressed(KeyboardKey.KEY_C) && !Keyboard.uiWantKeyboard)
                 {
                     renderClipboardBounds = false;
                     clipboard.Clear();
@@ -266,7 +281,7 @@ namespace RaylibElectronic
                 }
                 
                 //paste once released
-                if (Raylib.IsKeyReleased(KeyboardKey.KEY_V))
+                if (Raylib.IsKeyReleased(KeyboardKey.KEY_V) && !Keyboard.uiWantKeyboard)
                 {
                     Vector2 diff = Mouse.position - ((clipboardMin + clipboardMax) / 2f);
                     for (int i = 0; i < clipboard.Count; i++)
@@ -280,6 +295,18 @@ namespace RaylibElectronic
                 {
                     MoveComponent();
                     wantControl = true;
+                }
+                
+                //save circuit
+                if (Raylib.IsKeyPressed(KeyboardKey.KEY_S) && !Keyboard.uiWantKeyboard)
+                {
+                    Saving.Save();
+                }
+            
+                //reset circuit
+                if (Raylib.IsKeyPressed(KeyboardKey.KEY_R) && !Keyboard.uiWantKeyboard)
+                {
+                    ElectronicSim.Clear();
                 }
             }
         }

@@ -11,11 +11,17 @@ namespace RaylibElectronic
         static Vector2 size;
         static bool selectedMove;
         static bool interacting;
+        static bool enableTextInput;
+        static int lastKey;
         
         public static void Init()
         {
             size = new Vector2(300, 400);
-            //showEditor = true;
+            currentComponent = 0;
+            showEditor = false;
+            position = default;
+            selectedMove = false;
+            interacting = false;
         }
 
         public static void Update()
@@ -26,9 +32,14 @@ namespace RaylibElectronic
             Rectangle titleBox = new Rectangle(position.X, position.Y, size.X - (18 + (24 - 18 / 2.0f)), 24);
             
             if ((Mouse.screenPosition.X < position.X || Mouse.screenPosition.Y < position.Y || Mouse.screenPosition.X > position.X + size.X || Mouse.screenPosition.Y > position.Y + size.Y) && !interacting)
+            {
                 Mouse.uiWantMouse = false;
+            }
             else
+            {
+                //the mouse position will be over the ui
                 Mouse.uiWantMouse = true;
+            }
 
             if (Raylib.IsMouseButtonDown(MouseButton.MOUSE_BUTTON_LEFT) && Raylib.IsMouseButtonPressed(MouseButton.MOUSE_BUTTON_LEFT))
             {
@@ -36,7 +47,19 @@ namespace RaylibElectronic
                 {
                     selectedMove = true;
                     interacting = true;
+                    Keyboard.uiWantKeyboard = true;
                 }
+                else
+                {
+                    //exit out of keyboard usage
+                    Keyboard.uiWantKeyboard = false;
+                }
+
+                if ((!(Mouse.screenPosition.X < position.X) && !(Mouse.screenPosition.Y < position.Y) && !(Mouse.screenPosition.X > position.X + size.X) && !(Mouse.screenPosition.Y > position.Y + size.Y)) || interacting)
+                {
+                    Keyboard.uiWantKeyboard = true;
+                }
+                
             }
             if (Raylib.IsMouseButtonReleased(MouseButton.MOUSE_BUTTON_LEFT))
             {
@@ -158,14 +181,66 @@ namespace RaylibElectronic
             }
         }
 
+        static string labelInput = "";
         static void HandleLabelEditor()
         {
             int horizontalPad = 10;
             int verticalPad = 20;
             Rectangle window = new Rectangle(position.X, position.Y, size.X, size.Y);
 
-            string text = "";
-            RayGui.GuiTextInputBox(new Rectangle((window.X + (horizontalPad * 3f)), window.Y + (verticalPad * 4), window.width - (horizontalPad * 7f), 130), "Label Text", "", "Apply", text, 255);
+            //load the component text
+            labelInput = ((Label)ElectronicSim.components[currentComponent]).text;
+            
+            //get number of new lines
+            int numNewLine = 1;
+            for (int i = 0; i < labelInput.Length; i++)
+            {
+                if (labelInput[i] == '\n')
+                    numNewLine++;
+            }
+
+            Rectangle textBox = new Rectangle((window.X + (horizontalPad * 3f)), window.Y + (verticalPad * 4), window.width - (horizontalPad * 7f), 15 * numNewLine);
+
+            if (Raylib.IsMouseButtonPressed(MouseButton.MOUSE_BUTTON_LEFT))
+            {
+                if ((!(Mouse.screenPosition.X < textBox.x) && !(Mouse.screenPosition.Y < textBox.y) && !(Mouse.screenPosition.X > textBox.x + textBox.width) && !(Mouse.screenPosition.Y > textBox.y + textBox.height)))
+                {
+                    enableTextInput = true;
+                }
+                else
+                {
+                    enableTextInput = false;
+                }
+            }
+
+            //try and get keyboard input
+            if (Keyboard.uiWantKeyboard && enableTextInput)
+            {
+                //could add a check to see if it's still pressed down and repeat
+                int key = Raylib.GetKeyPressed();
+                if (key != 0)
+                {
+                    //check if backspace
+                    if (key == (int)KeyboardKey.KEY_BACKSPACE && labelInput.Length != 0)
+                        labelInput = labelInput.Remove(labelInput.Length - 1);
+                    
+                    //check if enter and max new lines
+                    if (key == (int)KeyboardKey.KEY_ENTER && numNewLine <= 10)
+                        labelInput += "\n";
+                    
+                    //check keys allowed
+                    //I have no idea what 126 is, but that is what raylib doc uses
+                    if ((key >= (int)KeyboardKey.KEY_SPACE) && (key <= 126))
+                    {
+                        //clip input to 255
+                        if(labelInput.Length <= 255)
+                            labelInput += (char)key;
+                    }
+                }
+            }
+
+            RayGui.GuiTextBox(textBox, labelInput, 15, enableTextInput);
+            ((Label)ElectronicSim.components[currentComponent]).text = labelInput;
         }
         
     }

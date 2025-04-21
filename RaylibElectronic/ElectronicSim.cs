@@ -108,6 +108,10 @@ namespace RaylibElectronic
 
         public static void Clear()
         {
+            //reset this to initial state
+            InputInteraction.Init();
+            ComponentEditor.Init();
+            
             components.Clear();
             idsToBeUsed.Clear();
         }

@@ -66,6 +66,10 @@ namespace RaylibElectronic
                     writer.Write(((Scope)comp).horizontalDiv);
                     writer.Write(((Scope)comp).horizontalLen);
                 }
+                else if (comp.type == ComponentTypes.Label)
+                {
+                    writer.Write(((Label)comp).text);
+                }
             }
             
             File.WriteAllBytes(SavePath + file, stream.ToArray());
@@ -93,10 +97,15 @@ namespace RaylibElectronic
             reader.Close();
             stream.Close();
 
+            Console.WriteLine(version);
+            
             switch (version)
             {
                 case "0.1":
                     SavingVersions.Read01(data);
+                    break;
+                case "0.11":
+                    SavingVersions.Read011(data);
                     break;
             }
 

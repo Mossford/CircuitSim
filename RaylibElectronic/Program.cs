@@ -22,6 +22,7 @@ namespace RaylibElectronic
             Init();
             
             Saving.Load(DateTime.Now.ToLongDateString() + ".circuit");
+            //Saving.Load("AddSub.circuit");
             
             while (!Raylib.WindowShouldClose())
             {
@@ -45,6 +46,8 @@ namespace RaylibElectronic
             Mouse.Init();
             
             ElectronicSim.Init();
+            ComponentEditor.Init();
+            InputInteraction.Init();
             ComponentEditor.Init();
         }
 
@@ -72,16 +75,6 @@ namespace RaylibElectronic
 
             if (zoom < 0.01f)
                 zoom = 0.01f;
-
-            if (Raylib.IsKeyPressed(KeyboardKey.KEY_S))
-            {
-                Saving.Save();
-            }
-            
-            if (Raylib.IsKeyPressed(KeyboardKey.KEY_R))
-            {
-                ElectronicSim.Clear();
-            }
             
             zoom = MathF.Abs(zoom);
             Global.camera.target = center;
